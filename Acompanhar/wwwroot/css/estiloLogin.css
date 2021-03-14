@@ -1,5 +1,5 @@
 ﻿.main {
-    background-color: rgb(49, 49, 49);
+    background-color: #473C8B;
     width: 400px;
     height: 400px;
     margin: 7em auto;
@@ -9,7 +9,7 @@
 
 .sign {
     padding-top: 40px;
-    color: #edef00;
+    color: white;
     font-family: 'Ubuntu', sans-serif;
     font-weight: bold;
     font-size: 23px;
@@ -66,7 +66,7 @@ form.form1 {
 .submit {
     cursor: pointer;
     border-radius: 5em;
-    background: #edef00;
+    background: white;
     border: 1px solid black;
     padding-left: 40px;
     padding-right: 40px;

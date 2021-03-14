@@ -6,15 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Home\_css\**" />
+    <Content Remove="Views\Home\_css\**" />
+    <EmbeddedResource Remove="Views\Home\_css\**" />
+    <None Remove="Views\Home\_css\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\css\estiloLogin.css" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Home\_css\" />
   </ItemGroup>
 
 </Project>

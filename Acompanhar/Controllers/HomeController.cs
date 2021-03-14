@@ -23,7 +23,7 @@ namespace Acompanhar.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Professor()
         {
             return View();
         }
