@@ -1,11 +1,7 @@
 ﻿using Acompanhar.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Acompanhar.Controllers
 {
@@ -24,6 +20,11 @@ namespace Acompanhar.Controllers
         }
 
         public IActionResult Professor()
+        {
+            return View();
+        }
+
+        public IActionResult Sobre()
         {
             return View();
         }

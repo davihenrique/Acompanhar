@@ -1,5 +1,3 @@
-using System;
-
 namespace Acompanhar.Models
 {
     public class ErrorViewModel
