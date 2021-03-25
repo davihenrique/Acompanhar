@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Acompanhar.Data;
 
 namespace Acompanhar
 {
@@ -19,6 +21,9 @@ namespace Acompanhar
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddDbContext<AcompanharContext>(options =>
+                    options.UseNpgsql(Configuration.GetConnectionString("AcompanharContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

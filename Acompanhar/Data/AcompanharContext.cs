@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Acompanhar.Models;
+
+namespace Acompanhar.Data
+{
+    public class AcompanharContext : DbContext
+    {
+        public AcompanharContext (DbContextOptions<AcompanharContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Acompanhar.Models.Professor> Professor { get; set; }
+    }
+}
