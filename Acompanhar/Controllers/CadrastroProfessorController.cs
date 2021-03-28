@@ -10,22 +10,22 @@ using Acompanhar.Models;
 
 namespace Acompanhar.Controllers
 {
-    public class ProfessorsController : Controller
+    public class CadrastroProfessorController : Controller
     {
         private readonly AcompanharContext _context;
 
-        public ProfessorsController(AcompanharContext context)
+        public CadrastroProfessorController(AcompanharContext context)
         {
             _context = context;
         }
 
-        // GET: Professors
+        // GET: CadrastroProfessor
         public async Task<IActionResult> Index()
         {
             return View(await _context.Professor.ToListAsync());
         }
 
-        // GET: Professors/Details/5
+        // GET: CadrastroProfessor/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

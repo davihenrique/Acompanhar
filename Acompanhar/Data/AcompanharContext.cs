@@ -15,5 +15,7 @@ namespace Acompanhar.Data
         }
 
         public DbSet<Acompanhar.Models.Professor> Professor { get; set; }
+
+        public DbSet<Acompanhar.Models.Questionario> Questionario { get; set; }
     }
 }

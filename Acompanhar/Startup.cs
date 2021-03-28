@@ -37,7 +37,11 @@ namespace Acompanhar
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             app.UseStaticFiles();
+            app.UseCors(option => option.AllowAnyOrigin()); ;
+
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
