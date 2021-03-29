@@ -8,9 +8,8 @@ namespace Acompanhar.Models
     public class Questao
     {
         public int Id { get; set; }
-        public int IdQuestionario { get; set; }
 
-        public String Enuciado { get; set; }
+        public String Enunciado { get; set; }
         public String AlternativaA { get; set; }
         public String AlternativaB { get; set; }
         public String AlternativaC { get; set; }
