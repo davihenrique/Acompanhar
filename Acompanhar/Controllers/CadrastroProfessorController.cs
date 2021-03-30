@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Acompanhar.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Acompanhar.Controllers
 {
@@ -19,15 +20,38 @@ namespace Acompanhar.Controllers
             _context = context;
         }
 
+        private bool verificarLogin()
+        {
+            ViewBag.Email = HttpContext.Session.GetString("Email");
+            ViewBag.Senha = HttpContext.Session.GetString("Senha");
+
+
+            if (ViewBag.Email != "admin" || ViewBag.Senha != "admin")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         // GET: CadrastroProfessor
         public async Task<IActionResult> Index()
         {
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(await _context.Professor.ToListAsync());
         }
 
         // GET: CadrastroProfessor/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -39,13 +63,18 @@ namespace Acompanhar.Controllers
             {
                 return NotFound();
             }
-
             return View(professor);
         }
 
         // GET: Professors/Create
         public IActionResult Create()
         {
+
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View();
         }
 
@@ -56,6 +85,12 @@ namespace Acompanhar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Email,Senha")] Professor professor)
         {
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
             if (ModelState.IsValid)
             {
                 _context.Add(professor);
@@ -68,6 +103,13 @@ namespace Acompanhar.Controllers
         // GET: Professors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
+
             if (id == null)
             {
                 return NotFound();
@@ -88,6 +130,14 @@ namespace Acompanhar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,Senha")] Professor professor)
         {
+
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
+
             if (id != professor.Id)
             {
                 return NotFound();
@@ -119,6 +169,12 @@ namespace Acompanhar.Controllers
         // GET: Professors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
             if (id == null)
             {
                 return NotFound();
@@ -139,6 +195,12 @@ namespace Acompanhar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
+            if (!verificarLogin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var professor = await _context.Professor.FindAsync(id);
             _context.Professor.Remove(professor);
             await _context.SaveChangesAsync();

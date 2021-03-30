@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Acompanhar.Models.GenericLogin
+@{
     ViewData["Title"] = "Professor";
 }
 
@@ -9,11 +10,11 @@
 
 <div class="main">
     <p class="sign" align="center">Tela de Login</p>
-    <form class="form1">
-        <input class="un " type="email" align="center" placeholder="E-Mail">
-        <input class="pass" type="password" align="center" placeholder="Senha">
-        <a class="submit" class="link" align="center">Entrar</a>
-        <p class="forgot" align="center"><a href="#" class="link">Esqueceu a senha ?</a></p>
+    <form class="form1" asp-action="Login" method="post">
+        <input class="un " type="email" align="center" placeholder="E-Mail" name="email" asp-for="Email">
+        <input class="pass" type="password" align="center" placeholder="Senha" name="senha" asp-for="Senha">
+        <input class="submit" type="submit" value="Entrar" />
+        
     </form>
 
 </div>

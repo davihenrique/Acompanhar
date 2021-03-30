@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
+using System;
 
 namespace Acompanhar
 {
@@ -21,6 +22,12 @@ namespace Acompanhar
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddControllersWithViews();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(15);
+            });
 
             services.AddDbContext<AcompanharContext>(options =>
                     options.UseNpgsql(Configuration.GetConnectionString("AcompanharContext")));
@@ -39,6 +46,9 @@ namespace Acompanhar
             }
 
             app.UseStaticFiles();
+
+            app.UseSession();
+
             app.UseCors(option => option.AllowAnyOrigin()); ;
 
             app.UseHttpsRedirection();

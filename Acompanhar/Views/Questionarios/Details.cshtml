@@ -1,0 +1,30 @@
+﻿@model Acompanhar.Models.Questionario
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Questionario</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IdProfessor)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IdProfessor)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Tema)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Tema)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.QuestionarioId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

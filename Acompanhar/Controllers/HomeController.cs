@@ -1,12 +1,18 @@
-﻿using Acompanhar.Models;
+﻿using Acompanhar.Data;
+using Acompanhar.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Acompanhar.Controllers
 {
     public class HomeController : Controller
     {
+
+      
+
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
@@ -19,10 +25,25 @@ namespace Acompanhar.Controllers
             return View();
         }
 
+       
+
         public IActionResult Professor()
         {
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(GenericLogin genericLogin)
+        {
+
+            HttpContext.Session.SetString("Email", genericLogin.Email);
+            HttpContext.Session.SetString("Senha", genericLogin.Senha);
+
+
+            return RedirectToAction("Index", "CadrastroProfessor");
+        }
+
 
         public IActionResult Sobre()
         {
@@ -34,5 +55,6 @@ namespace Acompanhar.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }
