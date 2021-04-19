@@ -40,8 +40,18 @@ namespace Acompanhar.Controllers
             HttpContext.Session.SetString("Email", genericLogin.Email);
             HttpContext.Session.SetString("Senha", genericLogin.Senha);
 
+            string email = HttpContext.Session.GetString("Email");
 
+            if (email == "admin") 
+            { 
             return RedirectToAction("Index", "CadrastroProfessor");
+            }
+            else
+            {
+             return RedirectToAction("Index", "Professor");
+            }
+
+            
         }
 
 

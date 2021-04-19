@@ -4,10 +4,12 @@
 @{
 }
 @{
-    ViewData["professor"] = "Fulaninho";
+
+    var nome = @ViewBag.Nome;
+    ViewData["nome"] = nome;
 }
 
-<h1>Bem vindo @ViewData["professor"]</h1>
+<h1>Bem vindo(a) @ViewData["nome"]</h1>
 <br>
 <button type="button" class="btn btn-primary">Criar</button>
 <button type="button" class="btn btn-primary">Resultados</button>
