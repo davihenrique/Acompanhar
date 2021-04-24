@@ -7,12 +7,21 @@
 
   <ItemGroup>
     <Compile Remove="Views\Home\_css\**" />
+    <Compile Remove="Views\Professor\**" />
     <Content Remove="Views\Home\_css\**" />
+    <Content Remove="Views\Professor\**" />
     <EmbeddedResource Remove="Views\Home\_css\**" />
+    <EmbeddedResource Remove="Views\Professor\**" />
     <None Remove="Views\Home\_css\**" />
+    <None Remove="Views\Professor\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\Questionarios\Create.cshtml" />
+    <None Include="Views\Questionarios\Delete.cshtml" />
+    <None Include="Views\Questionarios\Details.cshtml" />
+    <None Include="Views\Questionarios\Edit.cshtml" />
+    <None Include="Views\Questionarios\Index.cshtml" />
     <None Include="wwwroot\css\estiloLogin.css" />
   </ItemGroup>
 

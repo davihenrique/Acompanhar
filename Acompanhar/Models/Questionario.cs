@@ -7,28 +7,16 @@ namespace Acompanhar.Models
 {
     public class Questionario
     {
-        public int QuestionarioId { get; set; }
+        public int Id { get; set; }
         public int IdProfessor { get; set; }
         public String Tema { get; set; }
 
-       /* public Questao Questao1 { get; set; }
-        public Questao Questao2 { get; set; }
-        public Questao Questao3 { get; set; }
-        public Questao Questao4 { get; set; }
-        public Questao Questao5 { get; set; }
-        public Questao Questao6 { get; set; }
-        public Questao Questao7 { get; set; }
-        public Questao Questao8 { get; set; }
-        public Questao Questao9 { get; set; }
-        public Questao Questao10 { get; set; }*/
-
         public List<Questao> Questoes { get; set; }
-
         
-
-
-
-
+        public Questionario()
+        {
+            this.Questoes = new List<Questao>();
+        }
 
     }
 }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Acompanhar.Models;
+using Microsoft.AspNetCore.Http;
+
 
 namespace Acompanhar.Controllers
 {
@@ -19,10 +21,26 @@ namespace Acompanhar.Controllers
             _context = context;
         }
 
+
+
         // GET: Questionarios
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Questionario.ToListAsync());
+            int _IdProfessor;
+            try
+            {
+                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            var questionarios = _context.Questionario.Where(q => q.IdProfessor == _IdProfessor);
+            return View(questionarios);
+
+
         }
 
         // GET: Questionarios/Details/5
@@ -34,7 +52,7 @@ namespace Acompanhar.Controllers
             }
 
             var questionario = await _context.Questionario
-                .FirstOrDefaultAsync(m => m.QuestionarioId == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (questionario == null)
             {
                 return NotFound();
@@ -46,6 +64,16 @@ namespace Acompanhar.Controllers
         // GET: Questionarios/Create
         public IActionResult Create()
         {
+            int _IdProfessor;
+            try
+            {
+                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
             return View();
         }
 
@@ -54,10 +82,23 @@ namespace Acompanhar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuestionarioId,IdProfessor,Tema")] Questionario questionario)
+        public async Task<IActionResult> Create([Bind("Id,IdProfessor,Tema")] Questionario questionario)
         {
+            int _IdProfessor;
+            try
+            {
+                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
+
+                
+                questionario.IdProfessor = _IdProfessor;
                 _context.Add(questionario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -86,15 +127,27 @@ namespace Acompanhar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("QuestionarioId,IdProfessor,Tema")] Questionario questionario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdProfessor,Tema")] Questionario questionario)
         {
-            if (id != questionario.QuestionarioId)
+            int _IdProfessor;
+            try
+            {
+                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            if (id != questionario.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+
+                questionario.IdProfessor = _IdProfessor;
                 try
                 {
                     _context.Update(questionario);
@@ -102,7 +155,7 @@ namespace Acompanhar.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!QuestionarioExists(questionario.QuestionarioId))
+                    if (!QuestionarioExists(questionario.Id))
                     {
                         return NotFound();
                     }
@@ -125,7 +178,7 @@ namespace Acompanhar.Controllers
             }
 
             var questionario = await _context.Questionario
-                .FirstOrDefaultAsync(m => m.QuestionarioId == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (questionario == null)
             {
                 return NotFound();
@@ -147,7 +200,7 @@ namespace Acompanhar.Controllers
 
         private bool QuestionarioExists(int id)
         {
-            return _context.Questionario.Any(e => e.QuestionarioId == id);
+            return _context.Questionario.Any(e => e.Id == id);
         }
     }
 }
