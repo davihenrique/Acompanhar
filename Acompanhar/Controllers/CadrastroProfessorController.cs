@@ -20,7 +20,7 @@ namespace Acompanhar.Controllers
             _context = context;
         }
 
-        private bool verificarLogin()
+        private bool VerificarLogin()
         {
             ViewBag.Email = HttpContext.Session.GetString("Email");
             ViewBag.Senha = HttpContext.Session.GetString("Senha");
@@ -37,7 +37,7 @@ namespace Acompanhar.Controllers
         // GET: CadrastroProfessor
         public async Task<IActionResult> Index()
         {
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -48,7 +48,7 @@ namespace Acompanhar.Controllers
         // GET: CadrastroProfessor/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -70,7 +70,7 @@ namespace Acompanhar.Controllers
         public IActionResult Create()
         {
 
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -85,7 +85,7 @@ namespace Acompanhar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Email,Senha")] Professor professor)
         {
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -103,7 +103,7 @@ namespace Acompanhar.Controllers
         // GET: Professors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -131,7 +131,7 @@ namespace Acompanhar.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,Senha")] Professor professor)
         {
 
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -169,7 +169,7 @@ namespace Acompanhar.Controllers
         // GET: Professors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -196,7 +196,7 @@ namespace Acompanhar.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
-            if (!verificarLogin())
+            if (!VerificarLogin())
             {
                 return RedirectToAction("Index", "Home");
             }

@@ -18,5 +18,8 @@ namespace Acompanhar.Data
 
         public DbSet<Acompanhar.Models.Questionario> Questionario { get; set; }
 
+        public DbSet<Acompanhar.Models.Questao> Questao { get; set; }
+
+
     }
 }

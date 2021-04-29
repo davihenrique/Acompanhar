@@ -6,156 +6,142 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
-using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
 
-
-namespace Acompanhar.Controllers
+namespace Acompanhar.Models
 {
-    public class QuestionariosController : Controller
+    public class QuestoesController : Controller
     {
         private readonly AcompanharContext _context;
-        public QuestionariosController(AcompanharContext context)
+
+        public QuestoesController(AcompanharContext context)
         {
             _context = context;
         }
 
-        // GET: Questionarios
+        // GET: Questaos
         public IActionResult Index()
         {
-            int _IdProfessor;
+            int _idQuestionario;
             try
             {
-                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+                _idQuestionario = int.Parse(HttpContext.Session.GetString("IdQuestionario"));
 
             }
             catch (Exception)
             {
                 return NotFound();
             }
-
-            var questionarios = _context.Questionario.Where(q => q.IdProfessor == _IdProfessor);
-            return View(questionarios);
+            var questoes = _context.Questao.Where(q => q.QuestionarioId == _idQuestionario);
+            return View(questoes);
         }
 
-        public IActionResult Questao(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            HttpContext.Session.SetString("IdQuestionario", id.ToString());
-            return RedirectToAction("Index", "Questoes");
-        }
-
-        // GET: Questionarios/Details/5
+        // GET: Questaos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var questionario = await _context.Questionario
+            var questao = await _context.Questao
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (questionario == null)
+            if (questao == null)
             {
                 return NotFound();
             }
-            return View(questionario);
+            return View(questao);
         }
 
-        // GET: Questionarios/Create
+        // GET: Questaos/Create
         public IActionResult Create()
         {
-            int _IdProfessor;
+            int _idQuestionario;
             try
             {
-                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+                _idQuestionario = int.Parse(HttpContext.Session.GetString("IdQuestionario"));
             }
             catch (Exception)
             {
                 return NotFound();
             }
-
             return View();
         }
 
-        // POST: Questionarios/Create
+        // POST: Questaos/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdProfessor,Tema")] Questionario questionario)
+        public async Task<IActionResult> Create([Bind("Id,QuestionarioId,Enunciado,Justificativa")] Questao questao)
         {
-            int _IdProfessor;
+            int _idQuestionario;
             try
             {
-                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+                _idQuestionario = int.Parse(HttpContext.Session.GetString("IdQuestionario"));
             }
             catch (Exception)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
-                questionario.IdProfessor = _IdProfessor;
-                _context.Add(questionario);
+                questao.QuestionarioId = _idQuestionario;
+                _context.Add(questao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(questionario);
+            return View(questao);
         }
 
-        // GET: Questionarios/Edit/5
+        // GET: Questaos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var questionario = await _context.Questionario.FindAsync(id);
-            if (questionario == null)
+
+            var questao = await _context.Questao.FindAsync(id);
+            if (questao == null)
             {
                 return NotFound();
             }
-            return View(questionario);
+            return View(questao);
         }
 
-        // POST: Questionarios/Edit/5
+        // POST: Questaos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdProfessor,Tema")] Questionario questionario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,QuestionarioId,Enunciado,Justificativa")] Questao questao)
         {
-            int _IdProfessor;
+            int _idQuestionario;
             try
             {
-                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
+                _idQuestionario = int.Parse(HttpContext.Session.GetString("IdQuestionario"));
             }
             catch (Exception)
             {
                 return NotFound();
             }
 
-            if (id != questionario.Id)
+            if (id != questao.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-
-                questionario.IdProfessor = _IdProfessor;
                 try
                 {
-                    _context.Update(questionario);
+                    questao.QuestionarioId = _idQuestionario;
+                    _context.Update(questao);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!QuestionarioExists(questionario.Id))
+                    if (!QuestaoExists(questao.Id))
                     {
                         return NotFound();
                     }
@@ -166,10 +152,10 @@ namespace Acompanhar.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(questionario);
+            return View(questao);
         }
 
-        // GET: Questionarios/Delete/5
+        // GET: Questaos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -177,31 +163,30 @@ namespace Acompanhar.Controllers
                 return NotFound();
             }
 
-            var questionario = await _context.Questionario
+            var questao = await _context.Questao
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (questionario == null)
+            if (questao == null)
             {
                 return NotFound();
             }
 
-            return View(questionario);
+            return View(questao);
         }
 
-        // POST: Questionarios/Delete/5
+        // POST: Questaos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var questionario = await _context.Questionario.FindAsync(id);
-            _context.Questionario.Remove(questionario);
-         //   _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
+            var questao = await _context.Questao.FindAsync(id);
+            _context.Questao.Remove(questao);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool QuestionarioExists(int id)
+        private bool QuestaoExists(int id)
         {
-            return _context.Questionario.Any(e => e.Id == id);
+            return _context.Questao.Any(e => e.Id == id);
         }
     }
 }

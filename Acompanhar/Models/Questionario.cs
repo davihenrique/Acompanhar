@@ -12,7 +12,7 @@ namespace Acompanhar.Models
         public String Tema { get; set; }
 
         public List<Questao> Questoes { get; set; }
-        
+
         public Questionario()
         {
             this.Questoes = new List<Questao>();
