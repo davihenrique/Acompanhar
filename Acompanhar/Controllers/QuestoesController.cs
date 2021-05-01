@@ -33,6 +33,11 @@ namespace Acompanhar.Models
             var questoes = _context.Questao.Where(q => q.QuestionarioId == _idQuestionario).OrderBy(q => q.Id);
             return View(questoes);
         }
+              
+        public IActionResult BackToQuestionario()
+        {
+            return RedirectToAction("Index", "Questionarios");
+        }
 
         public IActionResult GerenciarAlternativa(int? id)
         {

@@ -38,6 +38,17 @@ namespace Acompanhar.Controllers
             return View(questionarios);
         }
 
+        public IActionResult Exit()
+        {
+            foreach (var cookie in Request.Cookies.Keys)
+
+            {
+                if (cookie == ".AspNetCore.Session")
+                    Response.Cookies.Delete(cookie);
+            }
+            return RedirectToAction("Professor", "Home");
+        }
+
         public IActionResult Questao(int? id)
         {
             if (id == null)
@@ -194,7 +205,16 @@ namespace Acompanhar.Controllers
         {
             var questionario = await _context.Questionario.FindAsync(id);
             _context.Questionario.Remove(questionario);
-         //   _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
+
+            List<Questao> questoes = (List<Questao>)_context.Questao.Where(q => q.QuestionarioId == id).ToList();
+
+            foreach(Questao q in questoes)
+            {
+                _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == q.Id));
+            }
+
+           _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

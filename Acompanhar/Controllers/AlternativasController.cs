@@ -42,6 +42,11 @@ namespace Acompanhar.Controllers
             return View(alternativas);
         }
 
+        public IActionResult BackToQuestao()
+        {
+            return RedirectToAction("Index", "Questoes");
+        }
+
         // GET: Alternativas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
