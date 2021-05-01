@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using System;
+using Acompanhar.Repositories;
 /*using Acompanhar.Repositories;*/
 
 namespace Acompanhar
@@ -22,6 +23,8 @@ namespace Acompanhar
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IAlternativaRepository, AlternativaRepository>();
+
             services.AddControllersWithViews();
 
             services.AddControllersWithViews();

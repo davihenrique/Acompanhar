@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Microsoft.AspNetCore.Http;
@@ -32,8 +30,19 @@ namespace Acompanhar.Models
             {
                 return NotFound();
             }
-            var questoes = _context.Questao.Where(q => q.QuestionarioId == _idQuestionario);
+            var questoes = _context.Questao.Where(q => q.QuestionarioId == _idQuestionario).OrderBy(q => q.Id);
             return View(questoes);
+        }
+
+        public IActionResult GerenciarAlternativa(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+            HttpContext.Session.SetString("IdQuestao", id.ToString());
+            return RedirectToAction("Index", "Alternativas");
         }
 
         // GET: Questaos/Details/5
@@ -180,6 +189,7 @@ namespace Acompanhar.Models
         {
             var questao = await _context.Questao.FindAsync(id);
             _context.Questao.Remove(questao);
+            _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == id));
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
