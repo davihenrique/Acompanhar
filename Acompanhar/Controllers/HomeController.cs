@@ -1,36 +1,34 @@
-﻿using Acompanhar.Data;
-using Acompanhar.Models;
+﻿using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Acompanhar.Controllers
 {
     public class HomeController : Controller
     {
-
-      
-
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             return View();
         }
 
-       
-
         public IActionResult Professor()
         {
             return View();
         }
+
+        public IActionResult Administrador()
+        {
+            return View();
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -40,19 +38,23 @@ namespace Acompanhar.Controllers
             HttpContext.Session.SetString("Email", genericLogin.Email);
             HttpContext.Session.SetString("Senha", genericLogin.Senha);
 
-            string email = HttpContext.Session.GetString("Email");
-
-            if (email == "admin") 
-            { 
-            return RedirectToAction("Index", "CadrastroProfessor");
-            }
-            else
-            {
-             return RedirectToAction("Index", "Professor");
-            }
-
-            
+            return RedirectToAction("Index", "Professor");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult LoginAdminstrador(GenericLoginAdministrator genericLoginAdministrator)
+        {
+            HttpContext.Session.SetString("Name", genericLoginAdministrator.Name);
+            HttpContext.Session.SetString("Senha", genericLoginAdministrator.Senha);
+
+            string name = HttpContext.Session.GetString("Name");
+            string pass = HttpContext.Session.GetString("Senha");
+
+            return RedirectToAction("Index", "CadrastroProfessor");
+        }
+
+
 
 
         public IActionResult Sobre()

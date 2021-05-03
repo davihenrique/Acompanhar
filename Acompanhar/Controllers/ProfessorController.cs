@@ -3,9 +3,7 @@ using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -66,7 +64,7 @@ namespace Acompanhar.Controllers
             }
             if (!emailValidado)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Professor", "Home");
             }
             else
             {
@@ -75,7 +73,5 @@ namespace Acompanhar.Controllers
 
             }            
         }
-
-       
     }
 }

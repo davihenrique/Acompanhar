@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Acompanhar.Models;
@@ -62,7 +61,9 @@ namespace Acompanhar.Controllers
         // GET: Questionarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+
+            
+            if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
             }
@@ -121,7 +122,7 @@ namespace Acompanhar.Controllers
         // GET: Questionarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
             }
@@ -183,7 +184,7 @@ namespace Acompanhar.Controllers
         // GET: Questionarios/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
             }

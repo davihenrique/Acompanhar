@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace Acompanhar.Controllers
 {
@@ -22,11 +20,11 @@ namespace Acompanhar.Controllers
 
         private bool VerificarLogin()
         {
-            ViewBag.Email = HttpContext.Session.GetString("Email");
+            ViewBag.Name = HttpContext.Session.GetString("Name");
             ViewBag.Senha = HttpContext.Session.GetString("Senha");
 
 
-            if (ViewBag.Email != "admin" || ViewBag.Senha != "admin")
+            if (ViewBag.Name != "admin" || ViewBag.Senha != "admin")
             {
                 return false;
             }
@@ -202,6 +200,21 @@ namespace Acompanhar.Controllers
             }
 
             var professor = await _context.Professor.FindAsync(id);
+
+            List<Questionario> questionarios = (List<Questionario>)_context.Questionario.Where(q => q.IdProfessor == id).ToList();
+            List<Questao> questoes;
+
+            foreach (Questionario q in questionarios)
+            {
+                questoes = (List<Questao>) _context.Questao.Where(qe => qe.QuestionarioId == q.Id).ToList();
+                foreach(Questao qe in questoes)
+                {
+                    _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == qe.Id));
+                }
+                _context.Questao.RemoveRange(questoes);
+            }
+            _context.Questionario.RemoveRange(questionarios);
+
             _context.Professor.Remove(professor);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
