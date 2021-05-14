@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
-using Acompanhar.Repositories;
 using Acompanhar.Enums;
 
 namespace Acompanhar.Controllers
@@ -15,17 +14,11 @@ namespace Acompanhar.Controllers
     public class AlternativasController : Controller
     {
         private readonly AcompanharContext _context;
-
-        private readonly IAlternativaRepository _alternativaRepository;
-
-        public AlternativasController(AcompanharContext context, IAlternativaRepository alternativaRepository)
+        public AlternativasController(AcompanharContext context)
         {
             _context = context;
-
-            _alternativaRepository = alternativaRepository;
         }
 
-        // GET: Alternativas
         public IActionResult Index()
         {
             int _QuestaoId;
@@ -38,7 +31,7 @@ namespace Acompanhar.Controllers
             {
                 return NotFound();
             }
-            var alternativas = _alternativaRepository.GetAlternativasOrder(_QuestaoId);
+            var alternativas = _context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id);
             return View(alternativas);
         }
 
@@ -47,14 +40,12 @@ namespace Acompanhar.Controllers
             return RedirectToAction("Index", "Questoes");
         }
 
-        // GET: Alternativas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
             }
-
             var alternativa = await _context.Alternativa
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (alternativa == null)
@@ -65,25 +56,21 @@ namespace Acompanhar.Controllers
             return View(alternativa);
         }
 
-        // GET: Alternativas/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Alternativas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,QuestaoId,Rotulo,Afirmacao,Verdadeira")] Alternativa alternativa)
+        public async Task<IActionResult> Create([Bind("Id,QuestaoId,Label,Afirmacao,Verdadeira")] Alternativa alternativa)
         {
             int _QuestaoId;
-            int _quant;
+            int _index;
             try
             {
                 _QuestaoId = int.Parse(HttpContext.Session.GetString("IdQuestao"));
-                _quant = _alternativaRepository.GetAlternativaCont(_QuestaoId);
+                _index = _context.Alternativa.Count(a => a.QuestaoId == _QuestaoId);
 
             }
             catch (Exception)
@@ -94,10 +81,10 @@ namespace Acompanhar.Controllers
             if (ModelState.IsValid)
             {
 
-                if (_quant < Enum.GetNames(typeof(Rotulo)).Length)
+                if (_index < Enum.GetNames(typeof(Label)).Length)
                 {
-                    Rotulo rotulo = (Rotulo)_quant;
-                    alternativa.Rotulo = rotulo.ToString();
+                    Label Label = (Label)_index;
+                    alternativa.Rotulo = Label.ToString();
 
                     alternativa.QuestaoId = _QuestaoId;
                     _context.Add(alternativa);
@@ -107,15 +94,12 @@ namespace Acompanhar.Controllers
             }
             return View(alternativa);
         }
-
-        // GET: Alternativas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
             }
-
             var alternativa = await _context.Alternativa.FindAsync(id);
             if (alternativa == null)
             {
@@ -124,12 +108,9 @@ namespace Acompanhar.Controllers
             return View(alternativa);
         }
 
-        // POST: Alternativas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,QuestaoId,Rotulo,Afirmacao,Verdadeira")] Alternativa alternativa)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,QuestaoId,Label,Afirmacao,Verdadeira")] Alternativa alternativa)
         {
             if (id != alternativa.Id)
             {
@@ -170,7 +151,6 @@ namespace Acompanhar.Controllers
             return View(alternativa);
         }
 
-        // GET: Alternativas/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
@@ -188,7 +168,6 @@ namespace Acompanhar.Controllers
             return View(alternativa);
         }
 
-        // POST: Alternativas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -202,20 +181,20 @@ namespace Acompanhar.Controllers
             try
             {
                 _QuestaoId = int.Parse(HttpContext.Session.GetString("IdQuestao"));
-                _quant = _alternativaRepository.GetAlternativaCont(_QuestaoId);
+                _quant = _context.Alternativa.Count(a => a.QuestaoId == _QuestaoId);
             }
             catch (Exception)
             {
                 return NotFound();
             }
 
-            List<Alternativa> alternativasList = (List<Alternativa>)_alternativaRepository.GetAlternativasOrder(_QuestaoId);
-            Rotulo rotulo;
+            List<Alternativa> alternativasList = (List<Alternativa>)_context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id).ToList();
+            Label Label;
 
             for (int i = 0; i < alternativasList.Count; i++)
             {
-                rotulo = (Rotulo)i;
-                alternativasList[i].Rotulo = rotulo.ToString();
+                Label = (Label)i;
+                alternativasList[i].Rotulo = Label.ToString();
 
                 _context.Update(alternativasList[i]);
                 _context.SaveChanges();

@@ -23,9 +23,7 @@ namespace Acompanhar
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IAlternativaRepository, AlternativaRepository>();
-
-            services.AddControllersWithViews();
+            services.AddTransient<IRealizaQuestionarioRepository, RealizaQuestionarioRepository>();
 
             services.AddControllersWithViews();
             services.AddSession(options =>
@@ -53,7 +51,7 @@ namespace Acompanhar
 
             app.UseSession();
 
-            app.UseCors(option => option.AllowAnyOrigin()); ;
+            app.UseCors(option => option.AllowAnyOrigin()); 
 
             app.UseHttpsRedirection();
 

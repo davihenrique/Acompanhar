@@ -6,8 +6,6 @@
         public int QuestaoId { get; set; }
         public string Rotulo { get; set; }
         public string Afirmacao { get; set; }
-        public bool Verdadeira { get; set; }
-
-
+        public bool Veracidade { get; set; }
     }
 }

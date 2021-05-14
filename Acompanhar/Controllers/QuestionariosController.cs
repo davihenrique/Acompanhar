@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Acompanhar.Data;
 using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
-
+using Acompanhar.ViewModels;
 
 namespace Acompanhar.Controllers
 {
@@ -19,33 +19,57 @@ namespace Acompanhar.Controllers
             _context = context;
         }
 
-        // GET: Questionarios
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IndexAsync([Bind("Email, Password")] GenericLoginViewModel genericLogin)
+        {
+            int ProfessorId = 0;
+            bool Validlogin = false;
+
+            List<Professor> professor = await _context.Professor.ToListAsync();
+
+            foreach (Professor p in professor)
+            {
+                if (p.Email.Equals(genericLogin.Email) && p.Senha.Equals(genericLogin.Password))
+                {
+                    Validlogin = true;
+                    ViewBag.Id = p.Id;
+                    ViewBag.Nome = p.Nome;
+                    ProfessorId = p.Id;
+                }
+
+            }
+            if (!Validlogin)
+            {
+                return RedirectToAction("Teacher", "Home");
+            }
+            else
+            {
+                HttpContext.Session.SetString("IdProfessor", ProfessorId.ToString());
+                return RedirectToAction(nameof(Index));
+            }
+        }
         public IActionResult Index()
         {
-            int _IdProfessor;
             try
             {
-                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
-
+                var _questionarios = _context.Questionario.Where(q => q.ProfessorId == int.Parse(HttpContext.Session.GetString("IdProfessor")));
+                return View(_questionarios);
             }
             catch (Exception)
             {
                 return NotFound();
             }
-
-            var questionarios = _context.Questionario.Where(q => q.IdProfessor == _IdProfessor);
-            return View(questionarios);
         }
 
         public IActionResult Exit()
         {
             foreach (var cookie in Request.Cookies.Keys)
-
             {
                 if (cookie == ".AspNetCore.Session")
                     Response.Cookies.Delete(cookie);
             }
-            return RedirectToAction("Professor", "Home");
+            return RedirectToAction("Teacher", "Home");
         }
 
         public IActionResult Questao(int? id)
@@ -58,11 +82,10 @@ namespace Acompanhar.Controllers
             return RedirectToAction("Index", "Questoes");
         }
 
-        // GET: Questionarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
 
-            
+
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
@@ -76,28 +99,15 @@ namespace Acompanhar.Controllers
             return View(questionario);
         }
 
-        // GET: Questionarios/Create
         public IActionResult Create()
         {
-            int _IdProfessor;
-            try
-            {
-                _IdProfessor = int.Parse(HttpContext.Session.GetString("IdProfessor"));
-            }
-            catch (Exception)
-            {
-                return NotFound();
-            }
-
             return View();
         }
 
-        // POST: Questionarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdProfessor,Tema")] Questionario questionario)
+
+        public async Task<IActionResult> Create([Bind("Id,ProfessorId,Tema")] Questionario questionario)
         {
             int _IdProfessor;
             try
@@ -108,10 +118,9 @@ namespace Acompanhar.Controllers
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
-                questionario.IdProfessor = _IdProfessor;
+                questionario.ProfessorId = _IdProfessor;
                 _context.Add(questionario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -119,7 +128,6 @@ namespace Acompanhar.Controllers
             return View(questionario);
         }
 
-        // GET: Questionarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
@@ -134,9 +142,6 @@ namespace Acompanhar.Controllers
             return View(questionario);
         }
 
-        // POST: Questionarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,IdProfessor,Tema")] Questionario questionario)
@@ -159,7 +164,7 @@ namespace Acompanhar.Controllers
             if (ModelState.IsValid)
             {
 
-                questionario.IdProfessor = _IdProfessor;
+                questionario.ProfessorId = _IdProfessor;
                 try
                 {
                     _context.Update(questionario);
@@ -181,7 +186,6 @@ namespace Acompanhar.Controllers
             return View(questionario);
         }
 
-        // GET: Questionarios/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
@@ -199,7 +203,6 @@ namespace Acompanhar.Controllers
             return View(questionario);
         }
 
-        // POST: Questionarios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -209,12 +212,12 @@ namespace Acompanhar.Controllers
 
             List<Questao> questoes = (List<Questao>)_context.Questao.Where(q => q.QuestionarioId == id).ToList();
 
-            foreach(Questao q in questoes)
+            foreach (Questao q in questoes)
             {
                 _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == q.Id));
             }
 
-           _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
+            _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

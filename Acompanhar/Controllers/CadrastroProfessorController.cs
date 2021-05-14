@@ -1,11 +1,13 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using Acompanhar.Data;
+using Acompanhar.Models;
+using Acompanhar.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Acompanhar.Data;
-using Acompanhar.Models;
-using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acompanhar.Controllers
 {
@@ -17,36 +19,57 @@ namespace Acompanhar.Controllers
         {
             _context = context;
         }
-
-        private bool VerificarLogin()
-        {
-            ViewBag.Name = HttpContext.Session.GetString("Name");
-            ViewBag.Senha = HttpContext.Session.GetString("Senha");
-
-
-            if (ViewBag.Name != "admin" || ViewBag.Senha != "admin")
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        // GET: CadrastroProfessor
         public async Task<IActionResult> Index()
         {
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(await _context.Professor.ToListAsync());
+            if (login.Equals("yes"))
+            {
+                return View(await _context.Professor.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
-        // GET: CadrastroProfessor/Details/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index([Bind("Email, Password")] GenericLoginViewModel genericLogin)
+        {
+            if (genericLogin.Email.Equals("123") && genericLogin.Password.Equals("123"))
+            {
+                HttpContext.Session.SetString("Login", "yes");
+            }
+            else
+            {
+                HttpContext.Session.SetString("Login", "no");
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (login != "yes")
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -64,30 +87,43 @@ namespace Acompanhar.Controllers
             return View(professor);
         }
 
-        // GET: Professors/Create
         public IActionResult Create()
         {
-
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
-        // POST: Professors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Email,Senha")] Professor professor)
         {
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             if (ModelState.IsValid)
             {
@@ -98,15 +134,22 @@ namespace Acompanhar.Controllers
             return View(professor);
         }
 
-        // GET: Professors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             if (id == null)
             {
@@ -121,20 +164,24 @@ namespace Acompanhar.Controllers
             return View(professor);
         }
 
-        // POST: Professors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,Senha")] Professor professor)
         {
-
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             if (id != professor.Id)
             {
@@ -163,15 +210,22 @@ namespace Acompanhar.Controllers
             }
             return View(professor);
         }
-
-        // GET: Professors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!VerificarLogin())
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             if (id == null)
             {
@@ -187,27 +241,34 @@ namespace Acompanhar.Controllers
 
             return View(professor);
         }
-
-        // POST: Professors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
-            if (!VerificarLogin())
+            if (login != "yes")
             {
                 return RedirectToAction("Index", "Home");
             }
 
             var professor = await _context.Professor.FindAsync(id);
 
-            List<Questionario> questionarios = (List<Questionario>)_context.Questionario.Where(q => q.IdProfessor == id).ToList();
+            List<Questionario> questionarios = (List<Questionario>)_context.Questionario.Where(q => q.ProfessorId == id).ToList();
             List<Questao> questoes;
 
             foreach (Questionario q in questionarios)
             {
-                questoes = (List<Questao>) _context.Questao.Where(qe => qe.QuestionarioId == q.Id).ToList();
-                foreach(Questao qe in questoes)
+                questoes = (List<Questao>)_context.Questao.Where(qe => qe.QuestionarioId == q.Id).ToList();
+                foreach (Questao qe in questoes)
                 {
                     _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == qe.Id));
                 }
@@ -219,7 +280,6 @@ namespace Acompanhar.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool ProfessorExists(int id)
         {
             return _context.Professor.Any(e => e.Id == id);

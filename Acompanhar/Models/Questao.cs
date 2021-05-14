@@ -11,9 +11,7 @@ namespace Acompanhar.Models
         public int QuestionarioId { get; set; }
         public String Enunciado { get; set; }
         public String Justificativa { get; set; }
-//        public String Resposta { get; set; }
         public List<Alternativa> Alternativas { get; set; }
-
         public Questao()
         {
             this.Alternativas = new List<Alternativa>();

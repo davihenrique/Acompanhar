@@ -3,9 +3,7 @@
 @{
     ViewData["Title"] = "Editar";
 }
-
 <h1>@ViewData["Title"]</h1>
-
 <h4>Questionario</h4>
 <hr />
 <div class="row">
@@ -13,7 +11,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="IdProfessor" />
+            <input type="hidden" asp-for="ProfessorId" />
 
             <div class="form-group">
                 <label asp-for="Tema" class="control-label"></label>

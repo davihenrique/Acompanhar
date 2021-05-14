@@ -1,65 +1,35 @@
 ﻿using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace Acompanhar.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
         public IActionResult Index()
         {
             return View();
         }
-
-        public IActionResult Professor()
+        public IActionResult Teacher()
         {
             return View();
         }
-
         public IActionResult Administrador()
         {
             return View();
         }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Login(GenericLogin genericLogin)
-        {
-
-            HttpContext.Session.SetString("Email", genericLogin.Email);
-            HttpContext.Session.SetString("Senha", genericLogin.Senha);
-
-            return RedirectToAction("Index", "Professor");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult LoginAdminstrador(GenericLoginAdministrator genericLoginAdministrator)
-        {
-            HttpContext.Session.SetString("Name", genericLoginAdministrator.Name);
-            HttpContext.Session.SetString("Senha", genericLoginAdministrator.Senha);
-
-            string name = HttpContext.Session.GetString("Name");
-            string pass = HttpContext.Session.GetString("Senha");
-
-            return RedirectToAction("Index", "CadrastroProfessor");
-        }
-
-
-
-
-        public IActionResult Sobre()
+        public IActionResult About()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult FazerQuestioanrio(RealizaQuestionario realizaQuestionario)
+        {
+            HttpContext.Session.SetString("Code", (realizaQuestionario.Code).ToString());
+            return RedirectToAction("Index", "RealizaQuestionario");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -67,6 +37,5 @@ namespace Acompanhar.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
     }
 }

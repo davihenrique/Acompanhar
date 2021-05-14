@@ -17,7 +17,6 @@ namespace Acompanhar.Models
             _context = context;
         }
 
-        // GET: Questaos
         public IActionResult Index()
         {
             int _idQuestionario;
@@ -33,15 +32,14 @@ namespace Acompanhar.Models
             var questoes = _context.Questao.Where(q => q.QuestionarioId == _idQuestionario).OrderBy(q => q.Id);
             return View(questoes);
         }
-              
+
         public IActionResult BackToQuestionario()
         {
             return RedirectToAction("Index", "Questionarios");
         }
 
-        public IActionResult GerenciarAlternativa(int? id)
+        public IActionResult ManagerAlternativa(int? id)
         {
-
             if (id == null)
             {
                 return NotFound();
@@ -50,7 +48,6 @@ namespace Acompanhar.Models
             return RedirectToAction("Index", "Alternativas");
         }
 
-        // GET: Questaos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
@@ -66,7 +63,6 @@ namespace Acompanhar.Models
             return View(questao);
         }
 
-        // GET: Questaos/Create
         public IActionResult Create()
         {
             int _idQuestionario;
@@ -81,9 +77,6 @@ namespace Acompanhar.Models
             return View();
         }
 
-        // POST: Questaos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,QuestionarioId,Enunciado,Justificativa")] Questao questao)
@@ -107,7 +100,6 @@ namespace Acompanhar.Models
             return View(questao);
         }
 
-        // GET: Questaos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
@@ -123,9 +115,6 @@ namespace Acompanhar.Models
             return View(questao);
         }
 
-        // POST: Questaos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,QuestionarioId,Enunciado,Justificativa")] Questao questao)
@@ -169,7 +158,6 @@ namespace Acompanhar.Models
             return View(questao);
         }
 
-        // GET: Questaos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
@@ -187,7 +175,6 @@ namespace Acompanhar.Models
             return View(questao);
         }
 
-        // POST: Questaos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

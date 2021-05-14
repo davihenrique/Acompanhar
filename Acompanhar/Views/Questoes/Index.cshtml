@@ -3,9 +3,7 @@
 @{
     ViewData["Title"] = "Quetões";
 }
-
 <h1>@ViewData["Title"]</h1>
-
 <p>
     <a asp-action="BackToQuestionario">Voltar</a></br>
     <a asp-action="Create">Criar Nova Questão</a>
@@ -31,12 +29,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Justificativa)
             </td>
-            
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Deletar</a> |
-                <a asp-action="GerenciarAlternativa" asp-route-id="@item.Id">Gerenciar Alternativas</a>
+                <a asp-action="ManagerAlternativa" asp-route-id="@item.Id">Gerenciar Alternativas</a>
             </td>
         </tr>
 }

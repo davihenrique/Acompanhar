@@ -1,18 +1,14 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model Acompanhar.Models.RealizaQuestionario
+
 @section styles{
     <link href="~/css/estiloLogin.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
 }
-
-
-
 <div class="main">
     <p class="sign" align="center">Tela de Login</p>
-    <form class="form1">
-        <input class="un " type="text" align="center" placeholder="Código">
-        <a class="submit"  class="link" align="center">Entrar</a>
+    <form class="form1" asp-action="FazerQuestioanrio" method="post">
+        <input class="un " type="text" align="center" placeholder="Código" asp-for="Code">
+        <input class="submit" type="submit" value="Entrar" />
     </form>
 
 </div>

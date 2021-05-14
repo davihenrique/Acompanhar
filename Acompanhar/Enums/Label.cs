@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Acompanhar.Enums
 {
-    public enum Rotulo
+    public enum Label
     {
         A,
         B,

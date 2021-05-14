@@ -3,16 +3,13 @@
 @{
     ViewData["Title"] = "Criar Questionario";
 }
-
 <h1>@ViewData["Title"]</h1>
-
 <h4>Questionario</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             <div class="form-group">
                 <label asp-for="Tema" class="control-label"></label>
                 <input asp-for="Tema" class="form-control" />
@@ -24,11 +21,9 @@
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Voltar Para Lista</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
