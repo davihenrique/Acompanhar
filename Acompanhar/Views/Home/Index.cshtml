@@ -1,4 +1,4 @@
-﻿@model Acompanhar.Models.RealizaQuestionario
+﻿@model Acompanhar.ViewModels.QuestionarioCursorViewModel
 
 @section styles{
     <link href="~/css/estiloLogin.css" rel="stylesheet" />
@@ -6,8 +6,8 @@
 }
 <div class="main">
     <p class="sign" align="center">Tela de Login</p>
-    <form class="form1" asp-action="FazerQuestioanrio" method="post">
-        <input class="un " type="text" align="center" placeholder="Código" asp-for="Code">
+    <form class="form1" asp-controller="RealizaQuestionario" asp-action="index" method="post">
+        <input class="un " type="text" align="center" placeholder="Código" name="Code" asp-for="Code">
         <input class="submit" type="submit" value="Entrar" />
     </form>
 

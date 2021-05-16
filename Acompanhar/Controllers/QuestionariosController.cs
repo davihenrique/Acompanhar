@@ -217,7 +217,7 @@ namespace Acompanhar.Controllers
                 _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == q.Id));
             }
 
-            _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
+            _context.Questao.RemoveRange(_context.Questao.Where((System.Linq.Expressions.Expression<Func<Questao, bool>>)(q => q.QuestionarioId == id)));
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

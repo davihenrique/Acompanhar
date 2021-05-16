@@ -1,0 +1,211 @@
+﻿using Acompanhar.Data;
+using Acompanhar.Enums;
+using Acompanhar.Models;
+using Acompanhar.Repositories;
+using Acompanhar.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Acompanhar.Controllers
+{
+    public class RealizaQuestionarioController : Controller
+    {
+        private readonly AcompanharContext _context;
+        private readonly IRealizaQuestionarioRepository _realizaQuestionarioRepository;
+
+        public RealizaQuestionarioController(AcompanharContext context, IRealizaQuestionarioRepository realizaQuestionarioRepository)
+        {
+            _context = context;
+            _realizaQuestionarioRepository = realizaQuestionarioRepository;
+        }
+        public IActionResult Feedback()
+        {
+            double res;
+
+            try
+            {
+                res = (double)((100 * (HttpContext.Session.GetInt32("Pontos"))) / _context.Questao.Count(q => q.QuestionarioId == int.Parse(HttpContext.Session.GetString("Code")))) / 10;
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewData["nota"] = res;
+            HttpContext.Session.SetString("nota", res.ToString());
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async System.Threading.Tasks.Task<IActionResult> FeedbackAsync([Bind("Message")] FeedbackViewModel feedbackViewModel)
+        {
+
+            Tarefa t = new Tarefa();
+            try
+            {
+                t.QuestionarioId = int.Parse(HttpContext.Session.GetString("Code"));
+                t.Nota = double.Parse(HttpContext.Session.GetString("nota"));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            t.Messagem = feedbackViewModel.Message;
+
+            _context.Add(t);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Index()
+        {
+            QuestionarioCursorViewModel Cursor = new QuestionarioCursorViewModel();
+            try
+            {
+                Cursor.Code = int.Parse(HttpContext.Session.GetString("Code"));
+                Cursor.Size = int.Parse(HttpContext.Session.GetString("Max"));
+                Cursor.CurrentPoint = int.Parse(HttpContext.Session.GetString("Cursor"));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            List<Questao> questoes = _context.Questao.Where(q => q.QuestionarioId == Cursor.Code).ToList();
+
+            Questao qa;
+            if (Cursor.CurrentPoint <= Cursor.Size)
+            {
+                qa = questoes[Cursor.CurrentPoint];
+            }
+            else
+            {
+                return RedirectToAction(nameof(Feedback));
+            }
+
+            List<Alternativa> alternativas = _context.Alternativa.Where(a => a.QuestaoId == qa.Id).ToList();
+
+            HttpContext.Session.SetString("justification", qa.Justificativa);
+
+            List<Alternativa> alternativasCorretas = _context.Alternativa.Where(a => a.QuestaoId == qa.Id).Where(a => a.Veracidade == true).ToList();
+            String _correctAnswer = "";
+
+            foreach (Alternativa a in alternativasCorretas)
+            {
+                _correctAnswer += a.Rotulo + " ";
+            }
+
+            HttpContext.Session.SetString("correctAnswer", _correctAnswer);
+
+            QuestionarioViewModel q = new()
+            {
+                Enuciado = qa.Enunciado
+
+            };
+            try
+            {
+                List<Alternativa> questaA = alternativas.Where(a => a.Rotulo == ((Label)0).ToString()).ToList();
+                q.AlternativaA = questaA[0].Afirmacao;
+                q.RotuloA = ((Label)0).ToString();
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                List<Alternativa> questaB = alternativas.Where(a => a.Rotulo == ((Label)1).ToString()).ToList();
+                q.AlternativaB = questaB[0].Afirmacao;
+                q.RotuloB = ((Label)1).ToString();
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                List<Alternativa> questaC = alternativas.Where(a => a.Rotulo == ((Label)2).ToString()).ToList();
+                q.AlternativaC = questaC[0].Afirmacao;
+                q.RotuloC = ((Label)2).ToString();
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                List<Alternativa> questaD = alternativas.Where(a => a.Rotulo == ((Label)3).ToString()).ToList();
+                q.AlternativaD = questaD[0].Afirmacao;
+                q.RotuloD = ((Label)3).ToString();
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                List<Alternativa> questaE = alternativas.Where(a => a.Rotulo == ((Label)4).ToString()).ToList();
+                q.AlternativaE = questaE[0].Afirmacao;
+                q.RotuloE = ((Label)4).ToString();
+            }
+            catch (Exception)
+            {
+            }
+
+            HttpContext.Session.SetString("Cursor", (++Cursor.CurrentPoint).ToString());
+
+            return View(q);
+        }
+
+
+        public IActionResult Result([Bind("Option1St,Option2Nd,Option3Rd,Option4Th,Option5Th")] UserResponse userResponse)
+        {
+            Resposta r = new();
+            r.Justification = HttpContext.Session.GetString("justification");
+            r.CorrectAnswer = HttpContext.Session.GetString("correctAnswer");
+
+            string Checked = "";
+
+            if (userResponse.Option1St) { Checked += ((Label)0) + " "; }
+            if (userResponse.Option2Nd) { Checked += ((Label)1) + " "; }
+            if (userResponse.Option3Rd) { Checked += ((Label)2) + " "; }
+            if (userResponse.Option4Th) { Checked += ((Label)3) + " "; }
+            if (userResponse.Option5Th) { Checked += ((Label)4) + " "; }
+
+            r.Checked = Checked;
+
+            //teste
+            if (r.Checked.Equals(r.CorrectAnswer))
+            {
+                HttpContext.Session.SetInt32("Pontos", (int)(HttpContext.Session.GetInt32("Pontos") + 1));
+            }
+
+            return View(r);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Index([Bind("Code")] QuestionarioCursorViewModel cursor)
+        {
+            if (!_realizaQuestionarioRepository.IsQuestionario(cursor.Code))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            cursor.Size = (_context.Questao.Count(q => q.QuestionarioId == cursor.Code)) - 1;
+            cursor.CurrentPoint = 0;
+
+            HttpContext.Session.SetString("Code", cursor.Code.ToString());
+            HttpContext.Session.SetString("Max", (cursor.Size).ToString());
+            HttpContext.Session.SetString("Cursor", cursor.CurrentPoint.ToString());
+
+            HttpContext.Session.SetInt32("Pontos", 0);
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

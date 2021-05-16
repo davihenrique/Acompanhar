@@ -1,0 +1,94 @@
+﻿@model Acompanhar.ViewModels.QuestionarioViewModel
+
+@{
+    ViewData["Title"] = "Questionário";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+
+
+@Html.DisplayNameFor(model => model.Enuciado)
+<br />
+
+
+<br />
+
+<form asp-action="Result">
+
+        <div class="form-group">
+            <label> @Html.DisplayFor(modelItem => modelItem.Enuciado)</label>
+        </div>
+        @if (Model.AlternativaA != null)
+        {
+
+            <div class="form-check">
+
+                <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option1St">
+
+                <label class="form-check-label" for="flexCheckDefault">
+                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloA))</b>
+                    @Html.DisplayFor(modelItem => modelItem.AlternativaA)
+
+                    <br />
+
+                </label>
+            </div>
+        }
+
+        @if (Model.AlternativaB != null)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option2Nd">
+                <label class="form-check-label" for="flexCheckDefault">
+                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloB))</b>
+                    @Html.DisplayFor(modelItem => modelItem.AlternativaB)
+                    <br />
+
+                </label>
+            </div>
+        }
+        @if (Model.AlternativaC != null)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option3Rd">
+                <label class="form-check-label" for="flexCheckDefault">
+                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloC))</b>
+                    @Html.DisplayFor(modelItem => modelItem.AlternativaC)
+                    <br />
+
+                </label>
+            </div>
+        }
+
+        @if (Model.AlternativaD != null)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"  id="flexCheckDefault" asp-for="Option4Th">
+                <label class="form-check-label" for="flexCheckDefault">
+                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloD))</b>
+                    @Html.DisplayFor(modelItem => modelItem.AlternativaD)
+                    <br />
+
+                </label>
+            </div>
+        }
+
+        @if (Model.AlternativaE != null)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option5Th">
+                <label class="form-check-label" for="flexCheckDefault">
+                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloE))</b>
+                    @Html.DisplayFor(modelItem => modelItem.AlternativaE)
+                    <br />
+
+                </label>
+            </div>
+        }
+
+  
+    <br />
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>

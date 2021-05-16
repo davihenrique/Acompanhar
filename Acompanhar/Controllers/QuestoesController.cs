@@ -55,7 +55,7 @@ namespace Acompanhar.Models
                 return NotFound();
             }
             var questao = await _context.Questao
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync((System.Linq.Expressions.Expression<Func<Questao, bool>>)(m => m.Id == id));
             if (questao == null)
             {
                 return NotFound();
@@ -166,7 +166,7 @@ namespace Acompanhar.Models
             }
 
             var questao = await _context.Questao
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync((System.Linq.Expressions.Expression<Func<Questao, bool>>)(m => m.Id == id));
             if (questao == null)
             {
                 return NotFound();
@@ -188,7 +188,7 @@ namespace Acompanhar.Models
 
         private bool QuestaoExists(int id)
         {
-            return _context.Questao.Any(e => e.Id == id);
+            return _context.Questao.Any((System.Linq.Expressions.Expression<Func<Questao, bool>>)(e => e.Id == id));
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Acompanhar.Repositories
 
         public Questionario Questionario(int Code)
         {
-            return (Questionario)_context.Questao.Where(q => q.Id == Code);
+            return (Questionario)_context.Questao.Where((System.Linq.Expressions.Expression<System.Func<Questao, bool>>)(q => q.Id == Code));
         }
 
 

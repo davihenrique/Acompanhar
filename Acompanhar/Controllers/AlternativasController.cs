@@ -63,7 +63,7 @@ namespace Acompanhar.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,QuestaoId,Label,Afirmacao,Verdadeira")] Alternativa alternativa)
+        public async Task<IActionResult> Create([Bind("Id,QuestaoId,Rotulo,Afirmacao,Veracidade")] Alternativa alternativa)
         {
             int _QuestaoId;
             int _index;
@@ -110,7 +110,7 @@ namespace Acompanhar.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,QuestaoId,Label,Afirmacao,Verdadeira")] Alternativa alternativa)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,QuestaoId,Rotulo,Afirmacao,Veracidade")] Alternativa alternativa)
         {
             if (id != alternativa.Id)
             {
