@@ -15,7 +15,6 @@ namespace Acompanhar.Controllers
     {
         private readonly AcompanharContext _context;
         private readonly IRealizaQuestionarioRepository _realizaQuestionarioRepository;
-
         public RealizaQuestionarioController(AcompanharContext context, IRealizaQuestionarioRepository realizaQuestionarioRepository)
         {
             _context = context;
@@ -34,7 +33,7 @@ namespace Acompanhar.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewData["nota"] = res;
+            ViewData["nota"] = @String.Format("{0:N1}", res).Replace(".", ",");
             HttpContext.Session.SetString("nota", res.ToString());
 
             return View();
@@ -45,7 +44,7 @@ namespace Acompanhar.Controllers
         public async System.Threading.Tasks.Task<IActionResult> FeedbackAsync([Bind("Message")] FeedbackViewModel feedbackViewModel)
         {
 
-            Tarefa t = new Tarefa();
+            Tarefa t = new();
             try
             {
                 t.QuestionarioId = int.Parse(HttpContext.Session.GetString("Code"));
@@ -61,13 +60,12 @@ namespace Acompanhar.Controllers
             _context.Add(t);
             await _context.SaveChangesAsync();
 
-
             return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Index()
         {
-            QuestionarioCursorViewModel Cursor = new QuestionarioCursorViewModel();
+            QuestionarioCursorViewModel Cursor = new();
             try
             {
                 Cursor.Code = int.Parse(HttpContext.Session.GetString("Code"));
@@ -107,14 +105,14 @@ namespace Acompanhar.Controllers
 
             QuestionarioViewModel q = new()
             {
-                Enuciado = qa.Enunciado
+                Question = qa.Enunciado
 
             };
             try
             {
                 List<Alternativa> questaA = alternativas.Where(a => a.Rotulo == ((Label)0).ToString()).ToList();
-                q.AlternativaA = questaA[0].Afirmacao;
-                q.RotuloA = ((Label)0).ToString();
+                q.TextOption1St = questaA[0].Afirmacao;
+                q.Label1St = ((Label)0).ToString();
             }
             catch (Exception)
             {
@@ -122,8 +120,8 @@ namespace Acompanhar.Controllers
             try
             {
                 List<Alternativa> questaB = alternativas.Where(a => a.Rotulo == ((Label)1).ToString()).ToList();
-                q.AlternativaB = questaB[0].Afirmacao;
-                q.RotuloB = ((Label)1).ToString();
+                q.TextOption2Nd = questaB[0].Afirmacao;
+                q.Label2Nd = ((Label)1).ToString();
             }
             catch (Exception)
             {
@@ -131,8 +129,8 @@ namespace Acompanhar.Controllers
             try
             {
                 List<Alternativa> questaC = alternativas.Where(a => a.Rotulo == ((Label)2).ToString()).ToList();
-                q.AlternativaC = questaC[0].Afirmacao;
-                q.RotuloC = ((Label)2).ToString();
+                q.TextOption3Rd = questaC[0].Afirmacao;
+                q.Label3Rd = ((Label)2).ToString();
             }
             catch (Exception)
             {
@@ -140,8 +138,8 @@ namespace Acompanhar.Controllers
             try
             {
                 List<Alternativa> questaD = alternativas.Where(a => a.Rotulo == ((Label)3).ToString()).ToList();
-                q.AlternativaD = questaD[0].Afirmacao;
-                q.RotuloD = ((Label)3).ToString();
+                q.TextOption4Th = questaD[0].Afirmacao;
+                q.Label4Th = ((Label)3).ToString();
             }
             catch (Exception)
             {
@@ -149,8 +147,8 @@ namespace Acompanhar.Controllers
             try
             {
                 List<Alternativa> questaE = alternativas.Where(a => a.Rotulo == ((Label)4).ToString()).ToList();
-                q.AlternativaE = questaE[0].Afirmacao;
-                q.RotuloE = ((Label)4).ToString();
+                q.TextOption5Th = questaE[0].Afirmacao;
+                q.Label5Th = ((Label)4).ToString();
             }
             catch (Exception)
             {
@@ -160,7 +158,6 @@ namespace Acompanhar.Controllers
 
             return View(q);
         }
-
 
         public IActionResult Result([Bind("Option1St,Option2Nd,Option3Rd,Option4Th,Option5Th")] UserResponse userResponse)
         {
@@ -178,7 +175,6 @@ namespace Acompanhar.Controllers
 
             r.Checked = Checked;
 
-            //teste
             if (r.Checked.Equals(r.CorrectAnswer))
             {
                 HttpContext.Session.SetInt32("Pontos", (int)(HttpContext.Session.GetInt32("Pontos") + 1));

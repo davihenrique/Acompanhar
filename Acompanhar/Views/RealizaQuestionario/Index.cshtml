@@ -9,7 +9,7 @@
 
 
 
-@Html.DisplayNameFor(model => model.Enuciado)
+@Html.DisplayNameFor(model => model.Question)
 <br />
 
 
@@ -18,9 +18,9 @@
 <form asp-action="Result">
 
         <div class="form-group">
-            <label> @Html.DisplayFor(modelItem => modelItem.Enuciado)</label>
+            <label> @Html.DisplayFor(modelItem => modelItem.Question)</label>
         </div>
-        @if (Model.AlternativaA != null)
+        @if (Model.TextOption1St != null)
         {
 
             <div class="form-check">
@@ -28,8 +28,8 @@
                 <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option1St">
 
                 <label class="form-check-label" for="flexCheckDefault">
-                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloA))</b>
-                    @Html.DisplayFor(modelItem => modelItem.AlternativaA)
+                    <b> @Html.DisplayFor(modelItem => modelItem.Label1St))</b>
+                    @Html.DisplayFor(modelItem => modelItem.TextOption1St)
 
                     <br />
 
@@ -37,51 +37,51 @@
             </div>
         }
 
-        @if (Model.AlternativaB != null)
+        @if (Model.TextOption2Nd != null)
         {
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option2Nd">
                 <label class="form-check-label" for="flexCheckDefault">
-                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloB))</b>
-                    @Html.DisplayFor(modelItem => modelItem.AlternativaB)
+                    <b> @Html.DisplayFor(modelItem => modelItem.Label2Nd))</b>
+                    @Html.DisplayFor(modelItem => modelItem.TextOption2Nd)
                     <br />
 
                 </label>
             </div>
         }
-        @if (Model.AlternativaC != null)
+        @if (Model.TextOption3Rd != null)
         {
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option3Rd">
                 <label class="form-check-label" for="flexCheckDefault">
-                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloC))</b>
-                    @Html.DisplayFor(modelItem => modelItem.AlternativaC)
+                    <b> @Html.DisplayFor(modelItem => modelItem.Label3Rd))</b>
+                    @Html.DisplayFor(modelItem => modelItem.TextOption3Rd)
                     <br />
 
                 </label>
             </div>
         }
 
-        @if (Model.AlternativaD != null)
+        @if (Model.TextOption4Th != null)
         {
             <div class="form-check">
                 <input class="form-check-input" type="checkbox"  id="flexCheckDefault" asp-for="Option4Th">
                 <label class="form-check-label" for="flexCheckDefault">
-                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloD))</b>
-                    @Html.DisplayFor(modelItem => modelItem.AlternativaD)
+                    <b> @Html.DisplayFor(modelItem => modelItem.Label4Th))</b>
+                    @Html.DisplayFor(modelItem => modelItem.TextOption4Th)
                     <br />
 
                 </label>
             </div>
         }
 
-        @if (Model.AlternativaE != null)
+        @if (Model.TextOption5Th != null)
         {
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option5Th">
                 <label class="form-check-label" for="flexCheckDefault">
-                    <b> @Html.DisplayFor(modelItem => modelItem.RotuloE))</b>
-                    @Html.DisplayFor(modelItem => modelItem.AlternativaE)
+                    <b> @Html.DisplayFor(modelItem => modelItem.Label5Th))</b>
+                    @Html.DisplayFor(modelItem => modelItem.TextOption5Th)
                     <br />
 
                 </label>

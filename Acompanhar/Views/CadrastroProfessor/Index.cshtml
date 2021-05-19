@@ -6,6 +6,8 @@
 }
 <h1>@ViewData["Title"]</h1>
 <p>
+    <a asp-action="Exit">Sair</a></br>
+    <a asp-action="EditAdministrator">Alterar Senha e E-mail Administrador</a><br /><br />
     <a asp-action="Create">Cadastrar Novo</a>
 </p>
 <table class="table">
@@ -33,8 +35,10 @@
             
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="EditPassword" asp-route-id="@item.Id">Trocar Senha</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Deletar</a>
+
             </td>
         </tr>
 }

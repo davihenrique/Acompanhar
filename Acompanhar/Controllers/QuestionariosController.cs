@@ -8,6 +8,7 @@ using Acompanhar.Data;
 using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
 using Acompanhar.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace Acompanhar.Controllers
 {
@@ -18,6 +19,31 @@ namespace Acompanhar.Controllers
         {
             _context = context;
         }
+
+        public IActionResult Results(int? id)
+        {
+
+            if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
+            {
+                return NotFound();
+            }
+
+            List<Tarefa> tarefas = _context.Tarefa.Where(t => t.QuestionarioId==id).ToList();
+
+            int count = _context.Tarefa.Count();
+
+            double sum=0;
+
+            foreach(Tarefa t in tarefas)
+            {
+                sum += t.Nota;
+            }
+
+            ViewData["Media"] = sum / count;
+
+            return View(tarefas);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -84,8 +110,6 @@ namespace Acompanhar.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-
-
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
             {
                 return NotFound();
@@ -222,7 +246,6 @@ namespace Acompanhar.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool QuestionarioExists(int id)
         {
             return _context.Questionario.Any(e => e.Id == id);

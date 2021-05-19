@@ -1,4 +1,7 @@
-﻿namespace Acompanhar.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace Acompanhar.Models
 {
     public class Tarefa
     {
@@ -6,6 +9,7 @@
         public int QuestionarioId { get; set; }
         public string Messagem { get; set; }
         public double Nota { get; set; }
+
 
     }
 }

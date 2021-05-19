@@ -19,6 +19,65 @@ namespace Acompanhar.Controllers
         {
             _context = context;
         }
+
+        public IActionResult Exit()
+        {
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                if (cookie == ".AspNetCore.Session")
+                    Response.Cookies.Delete(cookie);
+            }
+            return RedirectToAction("Administrador", "Home");
+        }
+
+        public IActionResult EditAdministrator()
+        {
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            Administrador admin = _context.Administrador.Find(1);
+
+
+            if (admin == null)
+            {
+                return NotFound();
+            }
+
+
+            return View(admin);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAdministratorAsync([Bind("Id,Email,Senha")] Administrador admin)
+        {
+            admin.Id = 1;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(admin);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception)
+                {
+                    return NotFound();
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> Index()
         {
             string login;
@@ -45,7 +104,19 @@ namespace Acompanhar.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("Email, Password")] GenericLoginViewModel genericLogin)
         {
-            if (genericLogin.Email.Equals("123") && genericLogin.Password.Equals("123"))
+
+            List<Administrador> admins = _context.Administrador.Where(a => a.Id == 1).ToList();
+            bool login = false;
+
+            foreach (Administrador a in admins)
+            {
+                if (genericLogin.Email.Equals(a.Email) && genericLogin.Password.Equals(a.Senha))
+                {
+                    login = true;
+                }
+            }
+
+            if (login)
             {
                 HttpContext.Session.SetString("Login", "yes");
             }
@@ -129,6 +200,83 @@ namespace Acompanhar.Controllers
             {
                 _context.Add(professor);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(professor);
+        }
+
+        public async Task<IActionResult> EditPasswordAsync(int? id)
+        {
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var professor = await _context.Professor.FindAsync(id);
+            if (professor == null)
+            {
+                return NotFound();
+            }
+            return View(professor);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPassword(int id,[Bind("Id,Nome,Email,Senha")] Professor professor)
+        {
+            string login;
+            try
+            {
+                login = HttpContext.Session.GetString("Login");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (login != "yes")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (id != professor.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(professor);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProfessorExists(professor.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(professor);
