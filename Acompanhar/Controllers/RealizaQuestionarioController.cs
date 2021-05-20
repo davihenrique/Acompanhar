@@ -43,7 +43,6 @@ namespace Acompanhar.Controllers
         [ValidateAntiForgeryToken]
         public async System.Threading.Tasks.Task<IActionResult> FeedbackAsync([Bind("Message")] FeedbackViewModel feedbackViewModel)
         {
-
             Tarefa t = new();
             try
             {
@@ -154,8 +153,11 @@ namespace Acompanhar.Controllers
             {
             }
 
-            HttpContext.Session.SetString("Cursor", (++Cursor.CurrentPoint).ToString());
 
+            HttpContext.Session.SetString("Cursor", (++Cursor.CurrentPoint).ToString());
+            ViewData["QuestaoAtual"] = Cursor.CurrentPoint;
+            ViewData["NumeroDeQuestao"] = Cursor.Size+1;
+            ViewData["Tema"] = HttpContext.Session.GetString("Tema");
             return View(q);
         }
 
@@ -191,13 +193,25 @@ namespace Acompanhar.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            Questionario q;
+            try
+            {
+                cursor.Size = (_context.Questao.Count(q => q.QuestionarioId == cursor.Code)) - 1;
+                q = _context.Questionario.Find(cursor.Code);
 
-            cursor.Size = (_context.Questao.Count(q => q.QuestionarioId == cursor.Code)) - 1;
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+                       
             cursor.CurrentPoint = 0;
 
             HttpContext.Session.SetString("Code", cursor.Code.ToString());
             HttpContext.Session.SetString("Max", (cursor.Size).ToString());
             HttpContext.Session.SetString("Cursor", cursor.CurrentPoint.ToString());
+
+            HttpContext.Session.SetString("Tema", q.Tema);
 
             HttpContext.Session.SetInt32("Pontos", 0);
 

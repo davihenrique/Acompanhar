@@ -44,7 +44,6 @@ namespace Acompanhar.Controllers
             return View(tarefas);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IndexAsync([Bind("Email, Password")] GenericLoginViewModel genericLogin)
@@ -239,9 +238,12 @@ namespace Acompanhar.Controllers
             foreach (Questao q in questoes)
             {
                 _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == q.Id));
+
             }
 
-            _context.Questao.RemoveRange(_context.Questao.Where((System.Linq.Expressions.Expression<Func<Questao, bool>>)(q => q.QuestionarioId == id)));
+            _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
+
+            _context.Tarefa.RemoveRange(_context.Tarefa.Where(t => t.QuestionarioId == id));
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

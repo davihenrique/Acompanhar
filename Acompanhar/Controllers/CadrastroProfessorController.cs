@@ -421,6 +421,8 @@ namespace Acompanhar.Controllers
                     _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == qe.Id));
                 }
                 _context.Questao.RemoveRange(questoes);
+
+                _context.Tarefa.RemoveRange(_context.Tarefa.Where(t => t.QuestionarioId == q.Id));
             }
             _context.Questionario.RemoveRange(questionarios);
 
