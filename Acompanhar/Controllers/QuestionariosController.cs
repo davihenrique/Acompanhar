@@ -8,7 +8,6 @@ using Acompanhar.Data;
 using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
 using Acompanhar.ViewModels;
-using System.Collections.ObjectModel;
 
 namespace Acompanhar.Controllers
 {
@@ -30,16 +29,32 @@ namespace Acompanhar.Controllers
 
             List<Tarefa> tarefas = _context.Tarefa.Where(t => t.QuestionarioId==id).ToList();
 
-            int count = _context.Tarefa.Count();
 
-            double sum=0;
-
-            foreach(Tarefa t in tarefas)
+            if (tarefas.Count() < 1)
             {
-                sum += t.Nota;
+                ViewData["Quantidade"] = 0;
+                ViewData["Media"] = 0;
+                ViewData["Max"] = 0;
+                ViewData["Mediana"] = 0;
+
+            }
+            else
+            {
+
+                ViewData["Quantidade"] = tarefas.Count();
+                ViewData["Media"] = @String.Format("{0:N1}", tarefas.Select(t => t.Nota).Average()).Replace(".", ",");
+                ViewData["Max"] = @String.Format("{0:N1}", tarefas.Select(t => t.Nota).Max()).Replace(".", ",");
+                if (tarefas.Count % 2 == 1)
+                {
+                    ViewData["Mediana"] = @String.Format("{0:N1}", tarefas.OrderBy(t => t.Nota).Select(t => t.Nota).Skip(tarefas.Count() / 2).First()).Replace(".", ",");
+                }
+                else
+                {
+                    ViewData["Mediana"] = @String.Format("{0:N1}", ((tarefas.OrderBy(t => t.Nota).Select(t => t.Nota).Skip(tarefas.Count() / 2).First()) + (tarefas.OrderBy(t => t.Nota).Select(t => t.Nota).Skip((tarefas.Count() - 1) / 2).First())) / 2).Replace(".", ",");
+                }
+
             }
 
-            ViewData["Media"] = sum / count;
 
             return View(tarefas);
         }

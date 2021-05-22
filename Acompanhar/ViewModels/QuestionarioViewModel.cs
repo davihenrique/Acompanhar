@@ -23,15 +23,5 @@ namespace Acompanhar.ViewModels
         public bool Option3Rd { get; set; }
         public bool Option4Th { get; set; }
         public bool Option5Th { get; set; }
-
-
-
-
-        /*
-        public QuestionarioViewModel(Questionario questionario, List<Questao> questoes)
-        {
-            Questionario = questionario;
-            Questoes = questoes;
-        }*/
     }
 }

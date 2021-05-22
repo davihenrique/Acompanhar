@@ -6,7 +6,12 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>Media: @ViewData["Media"]</p>
+<p>
+    Quantidade De vezes Realizada: @ViewData["Quantidade"]<br />
+    Média: @ViewData["Media"]<br />
+    Nota Máxima: @ViewData["Max"]<br />
+    Mediana: @ViewData["Mediana"]
+</p>
 
 <div>
     <a asp-action="Index">Voltar Para Lista</a>

@@ -13,7 +13,7 @@
         <form asp-action="Create">
             <div class="form-group">
                 <label asp-for="Afirmacao" class="control-label"></label>
-                <input asp-for="Afirmacao" class="form-control" />
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" asp-for="Afirmacao"></textarea>
                 <span asp-validation-for="Afirmacao" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
