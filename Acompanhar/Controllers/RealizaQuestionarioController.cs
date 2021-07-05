@@ -20,47 +20,6 @@ namespace Acompanhar.Controllers
             _context = context;
             _realizaQuestionarioRepository = realizaQuestionarioRepository;
         }
-        public IActionResult Feedback()
-        {
-            double res;
-
-            try
-            {
-                res = (double)((100 * (HttpContext.Session.GetInt32("Pontos"))) / _context.Questao.Count(q => q.QuestionarioId == int.Parse(HttpContext.Session.GetString("Code")))) / 10;
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            ViewData["nota"] = @String.Format("{0:N1}", res).Replace(".", ",");
-            HttpContext.Session.SetString("nota", res.ToString());
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async System.Threading.Tasks.Task<IActionResult> FeedbackAsync([Bind("Message")] FeedbackViewModel feedbackViewModel)
-        {
-            Tarefa t = new();
-            try
-            {
-                t.QuestionarioId = int.Parse(HttpContext.Session.GetString("Code"));
-                t.Nota = double.Parse(HttpContext.Session.GetString("nota"));
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            t.Messagem = feedbackViewModel.Message;
-
-            _context.Add(t);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Home");
-        }
 
         public IActionResult Index()
         {
@@ -93,7 +52,7 @@ namespace Acompanhar.Controllers
             HttpContext.Session.SetString("justification", qa.Justificativa);
 
             List<Alternativa> alternativasCorretas = _context.Alternativa.Where(a => a.QuestaoId == qa.Id).Where(a => a.Veracidade == true).ToList();
-            String _correctAnswer = "";
+            string _correctAnswer = "";
 
             foreach (Alternativa a in alternativasCorretas)
             {
@@ -156,9 +115,51 @@ namespace Acompanhar.Controllers
 
             HttpContext.Session.SetString("Cursor", (++Cursor.CurrentPoint).ToString());
             ViewData["QuestaoAtual"] = Cursor.CurrentPoint;
-            ViewData["NumeroDeQuestao"] = Cursor.Size+1;
+            ViewData["NumeroDeQuestao"] = Cursor.Size + 1;
             ViewData["Tema"] = HttpContext.Session.GetString("Tema");
             return View(q);
+        }
+
+        public IActionResult Feedback()
+        {
+            double res;
+
+            try
+            {
+                res = (double)((100 * (HttpContext.Session.GetInt32("Pontos"))) / _context.Questao.Count(q => q.QuestionarioId == int.Parse(HttpContext.Session.GetString("Code")))) / 10;
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewData["nota"] = @String.Format("{0:N1}", res).Replace(".", ",");
+            HttpContext.Session.SetString("nota", res.ToString());
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async System.Threading.Tasks.Task<IActionResult> FeedbackAsync([Bind("Message")] FeedbackViewModel feedbackViewModel)
+        {
+            Tarefa t = new();
+            try
+            {
+                t.QuestionarioId = int.Parse(HttpContext.Session.GetString("Code"));
+                t.Nota = double.Parse(HttpContext.Session.GetString("nota"));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            t.Messagem = feedbackViewModel.Message;
+
+            _context.Add(t);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Result([Bind("Option1St,Option2Nd,Option3Rd,Option4Th,Option5Th")] UserResponse userResponse)
@@ -204,7 +205,7 @@ namespace Acompanhar.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-                       
+
             cursor.CurrentPoint = 0;
 
             HttpContext.Session.SetString("Code", cursor.Code.ToString());

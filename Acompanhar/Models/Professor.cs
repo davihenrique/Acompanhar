@@ -1,4 +1,6 @@
-﻿namespace Acompanhar.Models
+﻿using System.Collections.Generic;
+
+namespace Acompanhar.Models
 {
     public class Professor
     {
@@ -6,6 +8,7 @@
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
+        public List<Questionario> Questionarios { get; set; }
     }
 }
 

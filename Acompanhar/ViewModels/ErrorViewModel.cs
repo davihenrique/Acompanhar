@@ -1,4 +1,4 @@
-namespace Acompanhar.Models
+namespace Acompanhar.ViewModels
 {
     public class ErrorViewModel
     {

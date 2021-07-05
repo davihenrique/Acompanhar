@@ -1,12 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Acompanhar.Data;
+using Acompanhar.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Acompanhar.Data;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Acompanhar.Models
+namespace Acompanhar.Controllers
 {
     public class QuestoesController : Controller
     {
@@ -33,10 +34,7 @@ namespace Acompanhar.Models
             return View(questoes);
         }
 
-        public IActionResult BackToQuestionario()
-        {
-            return RedirectToAction("Index", "Questionarios");
-        }
+        public IActionResult BackToQuestionario() => RedirectToAction("Index", "Questionarios");
 
         public IActionResult ManagerAlternativa(int? id)
         {
@@ -55,7 +53,7 @@ namespace Acompanhar.Models
                 return NotFound();
             }
             var questao = await _context.Questao
-                .FirstOrDefaultAsync((System.Linq.Expressions.Expression<Func<Questao, bool>>)(m => m.Id == id));
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (questao == null)
             {
                 return NotFound();
@@ -65,10 +63,9 @@ namespace Acompanhar.Models
 
         public IActionResult Create()
         {
-            int _idQuestionario;
             try
             {
-                _idQuestionario = int.Parse(HttpContext.Session.GetString("IdQuestionario"));
+                HttpContext.Session.GetString("IdQuestionario");
             }
             catch (Exception)
             {
@@ -166,7 +163,7 @@ namespace Acompanhar.Models
             }
 
             var questao = await _context.Questao
-                .FirstOrDefaultAsync((System.Linq.Expressions.Expression<Func<Questao, bool>>)(m => m.Id == id));
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (questao == null)
             {
                 return NotFound();
@@ -181,14 +178,11 @@ namespace Acompanhar.Models
         {
             var questao = await _context.Questao.FindAsync(id);
             _context.Questao.Remove(questao);
-            _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == id));
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool QuestaoExists(int id)
-        {
-            return _context.Questao.Any((System.Linq.Expressions.Expression<Func<Questao, bool>>)(e => e.Id == id));
-        }
+         => _context.Questao.Any((System.Linq.Expressions.Expression<Func<Questao, bool>>)(e => e.Id == id));
     }
 }

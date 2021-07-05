@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Acompanhar.Models
 {
     public class Questao
     {
         public int Id { get; set; }
-        public int QuestionarioId { get; set; }
-        public String Enunciado { get; set; }
-        public String Justificativa { get; set; }
+        public string Enunciado { get; set; }
+        public string Justificativa { get; set; }
         public List<Alternativa> Alternativas { get; set; }
-        public Questao()
-        {
-            this.Alternativas = new List<Alternativa>();
-        }
+        public int QuestionarioId { get; set; }
+        public Questionario Questionario { get; set; }
     }
 }

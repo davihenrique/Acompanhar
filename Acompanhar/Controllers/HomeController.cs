@@ -1,4 +1,5 @@
 ﻿using Acompanhar.Models;
+using Acompanhar.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -7,22 +8,13 @@ namespace Acompanhar.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-        public IActionResult Teacher()
-        {
-            return View();
-        }
-        public IActionResult Administrador()
-        {
-            return View();
-        }
-        public IActionResult About()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
+
+        public IActionResult Teacher() => View();
+
+        public IActionResult Administrador() => View();
+
+        public IActionResult About() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -32,10 +24,12 @@ namespace Acompanhar.Controllers
             return RedirectToAction("Index", "RealizaQuestionario");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [ResponseCache(Duration = 0,
+            Location = ResponseCacheLocation.None,
+            NoStore = true)]
+        public IActionResult Error() => View(new ErrorViewModel
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+        });
     }
 }

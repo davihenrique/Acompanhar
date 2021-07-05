@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Acompanhar.Data;
+using Acompanhar.Models;
+using Acompanhar.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Acompanhar.Data;
-using Acompanhar.Models;
-using Microsoft.AspNetCore.Http;
-using Acompanhar.ViewModels;
 
 namespace Acompanhar.Controllers
 {
@@ -27,10 +27,10 @@ namespace Acompanhar.Controllers
                 return NotFound();
             }
 
-            List<Tarefa> tarefas = _context.Tarefa.Where(t => t.QuestionarioId==id).ToList();
+            List<Tarefa> tarefas = _context.Tarefa.Where(t => t.QuestionarioId == id).ToList();
 
 
-            if (tarefas.Count() < 1)
+            if (tarefas.Count < 1)
             {
                 ViewData["Quantidade"] = 0;
                 ViewData["Media"] = 0;
@@ -40,8 +40,7 @@ namespace Acompanhar.Controllers
             }
             else
             {
-
-                ViewData["Quantidade"] = tarefas.Count();
+                ViewData["Quantidade"] = tarefas.Count;
                 ViewData["Media"] = @String.Format("{0:N1}", tarefas.Select(t => t.Nota).Average()).Replace(".", ",");
                 ViewData["Max"] = @String.Format("{0:N1}", tarefas.Select(t => t.Nota).Max()).Replace(".", ",");
                 if (tarefas.Count % 2 == 1)
@@ -55,39 +54,25 @@ namespace Acompanhar.Controllers
 
             }
 
-
             return View(tarefas);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> IndexAsync([Bind("Email, Password")] GenericLoginViewModel genericLogin)
+        public IActionResult Index([Bind("Email, Password")] GenericLoginViewModel genericLogin)
         {
-            int ProfessorId = 0;
-            bool Validlogin = false;
+            var professor = _context.Professor.Where(p => p.Email.Equals(genericLogin.Email) && p.Senha.Equals(genericLogin.Password));
 
-            List<Professor> professor = await _context.Professor.ToListAsync();
+            if (professor.Any())
+            {
+                ViewBag.Id = professor.FirstOrDefault().Id;
+                ViewBag.Nome = professor.FirstOrDefault().Nome;
 
-            foreach (Professor p in professor)
-            {
-                if (p.Email.Equals(genericLogin.Email) && p.Senha.Equals(genericLogin.Password))
-                {
-                    Validlogin = true;
-                    ViewBag.Id = p.Id;
-                    ViewBag.Nome = p.Nome;
-                    ProfessorId = p.Id;
-                }
-
-            }
-            if (!Validlogin)
-            {
-                return RedirectToAction("Teacher", "Home");
-            }
-            else
-            {
-                HttpContext.Session.SetString("IdProfessor", ProfessorId.ToString());
+                HttpContext.Session.SetString("IdProfessor", professor.FirstOrDefault().Id.ToString());
                 return RedirectToAction(nameof(Index));
             }
+
+            return RedirectToAction("Teacher", "Home");
         }
         public IActionResult Index()
         {
@@ -248,24 +233,9 @@ namespace Acompanhar.Controllers
             var questionario = await _context.Questionario.FindAsync(id);
             _context.Questionario.Remove(questionario);
 
-            List<Questao> questoes = (List<Questao>)_context.Questao.Where(q => q.QuestionarioId == id).ToList();
-
-            foreach (Questao q in questoes)
-            {
-                _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == q.Id));
-
-            }
-
-            _context.Questao.RemoveRange(_context.Questao.Where(q => q.QuestionarioId == id));
-
-            _context.Tarefa.RemoveRange(_context.Tarefa.Where(t => t.QuestionarioId == id));
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        private bool QuestionarioExists(int id)
-        {
-            return _context.Questionario.Any(e => e.Id == id);
-        }
+        private bool QuestionarioExists(int id) => _context.Questionario.Any(e => e.Id == id);
     }
 }

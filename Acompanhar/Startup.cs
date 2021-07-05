@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Acompanhar.Data;
+using Acompanhar.Repositories;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Acompanhar.Data;
 using System;
-using Acompanhar.Repositories;
 /*using Acompanhar.Repositories;*/
 
 namespace Acompanhar
@@ -51,7 +51,7 @@ namespace Acompanhar
 
             app.UseSession();
 
-            app.UseCors(option => option.AllowAnyOrigin()); 
+            app.UseCors(option => option.AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 

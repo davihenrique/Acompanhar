@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace Acompanhar.Models
@@ -7,12 +6,10 @@ namespace Acompanhar.Models
     public class Questionario
     {
         public int Id { get; set; }
-        public int ProfessorId { get; set; }
-        public String Tema { get; set; }
+        public string Tema { get; set; }
         public List<Questao> Questoes { get; set; }
-        public Questionario()
-        {
-            this.Questoes = new List<Questao>();
-        }
+        public List<Tarefa> Tarefas { get; set; }
+        public int ProfessorId { get; set; }
+        public Professor Professor { get; set; }
     }
 }

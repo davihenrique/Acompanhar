@@ -1,29 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Acompanhar.Models;
 using Microsoft.EntityFrameworkCore;
-using Acompanhar.Models;
 
 namespace Acompanhar.Data
 {
     public class AcompanharContext : DbContext
     {
-        public AcompanharContext (DbContextOptions<AcompanharContext> options)
+        public DbSet<Professor> Professor { get; set; }
+
+        public DbSet<Questionario> Questionario { get; set; }
+
+        public DbSet<Questao> Questao { get; set; }
+
+        public DbSet<Alternativa> Alternativa { get; set; }
+
+        public DbSet<Tarefa> Tarefa { get; set; }
+        public DbSet<Administrador> Administrador { get; set; }
+
+        public AcompanharContext(DbContextOptions<AcompanharContext> options)
             : base(options)
         {
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 
-        public DbSet<Acompanhar.Models.Professor> Professor { get; set; }
+            modelBuilder.Entity<Professor>()
+            .HasMany(p => p.Questionarios)
+            .WithOne(p => p.Professor)
+            .HasForeignKey(p => p.ProfessorId);
 
-        public DbSet<Acompanhar.Models.Questionario> Questionario { get; set; }
+            modelBuilder.Entity<Questionario>()
+            .HasMany(q => q.Questoes)
+            .WithOne(q => q.Questionario)
+            .HasForeignKey(q => q.QuestionarioId);
 
-        public DbSet<Acompanhar.Models.Questao> Questao { get; set; }
+            modelBuilder.Entity<Questionario>()
+            .HasMany(q => q.Tarefas)
+            .WithOne(t => t.Questionario)
+            .HasForeignKey(t => t.QuestionarioId);
 
-        public DbSet<Acompanhar.Models.Alternativa> Alternativa { get; set; }
+            modelBuilder.Entity<Questao>()
+            .HasMany(q => q.Alternativas)
+            .WithOne(a => a.Questao)
+            .HasForeignKey(a => a.QuestaoId);
 
-        public DbSet<Acompanhar.Models.Tarefa> Tarefa { get; set; }
-        public DbSet<Acompanhar.Models.Administrador> Administrador { get; set; }
-
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

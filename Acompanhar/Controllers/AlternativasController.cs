@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Acompanhar.Data;
+﻿using Acompanhar.Data;
+using Acompanhar.Enums;
 using Acompanhar.Models;
 using Microsoft.AspNetCore.Http;
-using Acompanhar.Enums;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acompanhar.Controllers
 {
@@ -31,14 +30,14 @@ namespace Acompanhar.Controllers
             {
                 return NotFound();
             }
-            var alternativas = _context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id);
+
+            var questao = _context.Questao.Include(q => q.Alternativas).Where(q => q.Id == _QuestaoId);
+
+            var alternativas = questao.FirstOrDefault().Alternativas;
+
             return View(alternativas);
         }
 
-        public IActionResult BackToQuestao()
-        {
-            return RedirectToAction("Index", "Questoes");
-        }
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,19 +45,16 @@ namespace Acompanhar.Controllers
             {
                 return NotFound();
             }
+
             var alternativa = await _context.Alternativa
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (alternativa == null)
             {
                 return NotFound();
             }
 
             return View(alternativa);
-        }
-
-        public IActionResult Create()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -188,10 +184,10 @@ namespace Acompanhar.Controllers
                 return NotFound();
             }
 
-            List<Alternativa> alternativasList = (List<Alternativa>)_context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id).ToList();
+            var alternativasList = _context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id).ToList();
             Label Label;
 
-            for (int i = 0; i < alternativasList.Count; i++)
+            for (int i = 1; i <= alternativasList.Count; i++)
             {
                 Label = (Label)i;
                 alternativasList[i].Rotulo = Label.ToString();
@@ -199,12 +195,15 @@ namespace Acompanhar.Controllers
                 _context.Update(alternativasList[i]);
                 _context.SaveChanges();
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AlternativaExists(int id)
-        {
-            return _context.Alternativa.Any(e => e.Id == id);
-        }
+
+        public IActionResult Create() => View();
+
+        public IActionResult BackToQuestao() => RedirectToAction("Index", "Questoes");
+
+        private bool AlternativaExists(int id) => _context.Alternativa.Any(e => e.Id == id);
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,47 +21,36 @@ namespace Acompanhar.Controllers
 
         public IActionResult Exit()
         {
-            foreach (var cookie in Request.Cookies.Keys)
+            var cookie = Request.Cookies.Keys.Where(c => c == ".AspNetCore.Session");
+            if (cookie.Any())
             {
-                if (cookie == ".AspNetCore.Session")
-                    Response.Cookies.Delete(cookie);
+                Response.Cookies.Delete(cookie.FirstOrDefault());
             }
+
             return RedirectToAction("Administrador", "Home");
         }
 
         public IActionResult EditAdministrator()
         {
-            string login;
             try
             {
-                login = HttpContext.Session.GetString("Login");
+                if (IsLogin)
+                {
+                    var admin = _context.Administrador.Find(1);
+                    return admin is null ? NotFound() : View(admin);
+                }
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
-
-            if (login != "yes")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            Administrador admin = _context.Administrador.Find(1);
-
-
-            if (admin == null)
-            {
-                return NotFound();
-            }
-
-
-            return View(admin);
+            return RedirectToAction("Index", "Home");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAdministratorAsync([Bind("Id,Email,Senha")] Administrador admin)
         {
-            admin.Id = 1;
             if (ModelState.IsValid)
             {
                 try
@@ -80,24 +68,19 @@ namespace Acompanhar.Controllers
 
         public async Task<IActionResult> Index()
         {
-            string login;
             try
             {
-                login = HttpContext.Session.GetString("Login");
+                if (IsLogin)
+                {
+                    return View(await _context.Professor.ToListAsync());
+                }
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            if (login.Equals("yes"))
-            {
-                return View(await _context.Professor.ToListAsync());
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
@@ -105,24 +88,11 @@ namespace Acompanhar.Controllers
         public IActionResult Index([Bind("Email, Password")] GenericLoginViewModel genericLogin)
         {
 
-            List<Administrador> admins = _context.Administrador.Where(a => a.Id == 1).ToList();
-            bool login = false;
+            var admin = _context.Administrador.FirstOrDefault();
 
-            foreach (Administrador a in admins)
-            {
-                if (genericLogin.Email.Equals(a.Email) && genericLogin.Password.Equals(a.Senha))
-                {
-                    login = true;
-                }
-            }
-
-            if (login)
+            if (genericLogin.Email.Equals(admin.Email) && genericLogin.Password.Equals(admin.Senha))
             {
                 HttpContext.Session.SetString("Login", "yes");
-            }
-            else
-            {
-                HttpContext.Session.SetString("Login", "no");
             }
 
             return RedirectToAction(nameof(Index));
@@ -130,133 +100,126 @@ namespace Acompanhar.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            string login;
-            try
-            {
-                login = HttpContext.Session.GetString("Login");
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            if (login != "yes")
-            {
-                return RedirectToAction("Index", "Home");
-            }
             if (id == null)
             {
                 return NotFound();
             }
 
-            var professor = await _context.Professor
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (professor == null)
-            {
-                return NotFound();
-            }
-            return View(professor);
-        }
-
-        public IActionResult Create()
-        {
-            string login;
             try
             {
-                login = HttpContext.Session.GetString("Login");
+                if (IsLogin)
+                {
+                    var professor = await _context.Professor.FirstOrDefaultAsync(m => m.Id == id);
+                    if (professor == null)
+                    {
+                        return NotFound();
+                    }
+                    return View(professor);
+                }
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            if (login != "yes")
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Create()
+        {
+            try
+            {
+                if (IsLogin)
+                {
+                    return View();
+                }
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
-            return View();
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Email,Senha")] Professor professor)
         {
-            string login;
+
             try
             {
-                login = HttpContext.Session.GetString("Login");
+                if (IsLogin)
+                {
+
+                    if (ModelState.IsValid)
+                    {
+                        _context.Add(professor);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    return View(professor);
+                }
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            if (login != "yes")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            if (ModelState.IsValid)
-            {
-                _context.Add(professor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(professor);
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> EditPasswordAsync(int? id)
         {
-            string login;
-            try
-            {
-                login = HttpContext.Session.GetString("Login");
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            if (login != "yes")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             if (id == null)
             {
                 return NotFound();
             }
 
-            var professor = await _context.Professor.FindAsync(id);
-            if (professor == null)
-            {
-                return NotFound();
-            }
-            return View(professor);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPassword(int id,[Bind("Id,Nome,Email,Senha")] Professor professor)
-        {
-            string login;
             try
             {
-                login = HttpContext.Session.GetString("Login");
+
+                if (IsLogin)
+                {
+                    var professor = await _context.Professor.FindAsync(id);
+
+                    if (professor == null)
+                    {
+                        return NotFound();
+                    }
+
+                    return View(professor);
+                }
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            if (login != "yes")
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPassword(int id, [Bind("Id,Nome,Email,Senha")] Professor professor)
+        {
 
             if (id != professor.Id)
             {
                 return NotFound();
+            }
+
+            try
+            {
+
+                if (HttpContext.Session.GetString("Login") != "yes")
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
             }
 
             if (ModelState.IsValid)
@@ -360,76 +323,60 @@ namespace Acompanhar.Controllers
         }
         public async Task<IActionResult> Delete(int? id)
         {
-            string login;
-            try
-            {
-                login = HttpContext.Session.GetString("Login");
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            if (login != "yes")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             if (id == null)
             {
                 return NotFound();
             }
 
-            var professor = await _context.Professor
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (professor == null)
-            {
-                return NotFound();
-            }
-
-            return View(professor);
-        }
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            string login;
             try
             {
-                login = HttpContext.Session.GetString("Login");
+
+                if (IsLogin)
+                {
+                    var professor = await _context.Professor
+                        .FirstOrDefaultAsync(m => m.Id == id);
+                    if (professor == null)
+                    {
+                        return NotFound();
+                    }
+
+                    return View(professor);
+                }
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            if (login != "yes")
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+
+                if (IsLogin)
+                {
+                    var professor = await _context.Professor.FindAsync(id);
+
+                    _context.Professor.Remove(professor);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            var professor = await _context.Professor.FindAsync(id);
-
-            List<Questionario> questionarios = (List<Questionario>)_context.Questionario.Where(q => q.ProfessorId == id).ToList();
-            List<Questao> questoes;
-
-            foreach (Questionario q in questionarios)
-            {
-                questoes = (List<Questao>)_context.Questao.Where(qe => qe.QuestionarioId == q.Id).ToList();
-                foreach (Questao qe in questoes)
-                {
-                    _context.Alternativa.RemoveRange(_context.Alternativa.Where(a => a.QuestaoId == qe.Id));
-                }
-                _context.Questao.RemoveRange(questoes);
-
-                _context.Tarefa.RemoveRange(_context.Tarefa.Where(t => t.QuestionarioId == q.Id));
-            }
-            _context.Questionario.RemoveRange(questionarios);
-
-            _context.Professor.Remove(professor);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home");
         }
+
+        private bool IsLogin => HttpContext.Session.GetString("Login") == "yes";
+
         private bool ProfessorExists(int id)
         {
             return _context.Professor.Any(e => e.Id == id);
