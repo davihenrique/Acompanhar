@@ -1,10 +1,10 @@
 ﻿using AcompanharApp.Data;
-using AcompanharApp.Enums;
 using AcompanharApp.Models;
 using AcompanharApp.Repositories;
 using AcompanharApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace AcompanharApp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            List<Questao> questoes = _context.Questao.Where(q => q.QuestionarioId == Cursor.Code).ToList();
+            List<Questao> questoes = _context.Questao.Where(q => q.QuestionarioId == Cursor.Code).Include(q => q.Alternativas).ToList();
 
             Questao qa;
             if (Cursor.CurrentPoint <= Cursor.Size)
@@ -47,11 +47,10 @@ namespace AcompanharApp.Controllers
                 return RedirectToAction(nameof(Feedback));
             }
 
-            List<Alternativa> alternativas = _context.Alternativa.Where(a => a.QuestaoId == qa.Id).ToList();
-
             HttpContext.Session.SetString("justification", qa.Justificativa);
 
-            List<Alternativa> alternativasCorretas = _context.Alternativa.Where(a => a.QuestaoId == qa.Id).Where(a => a.Veracidade == true).ToList();
+            List<Alternativa> alternativasCorretas = qa.Alternativas.Where(a => a.Veracidade).ToList();
+
             string _correctAnswer = "";
 
             foreach (Alternativa a in alternativasCorretas)
@@ -63,54 +62,22 @@ namespace AcompanharApp.Controllers
 
             QuestionarioViewModel q = new()
             {
-                Question = qa.Enunciado
+                Question = qa.Enunciado,
+                Alternatives = new List<AlternativeViewModel>()
 
             };
-            try
+
+            foreach (var alternative in qa.Alternativas)
             {
-                List<Alternativa> questaA = alternativas.Where(a => a.Rotulo == ((Label)0).ToString()).ToList();
-                q.TextOption1St = questaA[0].Afirmacao;
-                q.Label1St = ((Label)0).ToString();
+                q.Alternatives.Add(new AlternativeViewModel
+                {
+                    Text = alternative.Afirmacao,
+                    Label = alternative.Rotulo,
+                    IsCorrect = alternative.Veracidade,
+                    Selected = false
+                });
             }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                List<Alternativa> questaB = alternativas.Where(a => a.Rotulo == ((Label)1).ToString()).ToList();
-                q.TextOption2Nd = questaB[0].Afirmacao;
-                q.Label2Nd = ((Label)1).ToString();
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                List<Alternativa> questaC = alternativas.Where(a => a.Rotulo == ((Label)2).ToString()).ToList();
-                q.TextOption3Rd = questaC[0].Afirmacao;
-                q.Label3Rd = ((Label)2).ToString();
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                List<Alternativa> questaD = alternativas.Where(a => a.Rotulo == ((Label)3).ToString()).ToList();
-                q.TextOption4Th = questaD[0].Afirmacao;
-                q.Label4Th = ((Label)3).ToString();
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                List<Alternativa> questaE = alternativas.Where(a => a.Rotulo == ((Label)4).ToString()).ToList();
-                q.TextOption5Th = questaE[0].Afirmacao;
-                q.Label5Th = ((Label)4).ToString();
-            }
-            catch (Exception)
-            {
-            }
+
 
 
             HttpContext.Session.SetString("Cursor", (++Cursor.CurrentPoint).ToString());
@@ -162,23 +129,34 @@ namespace AcompanharApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Result([Bind("Option1St,Option2Nd,Option3Rd,Option4Th,Option5Th")] UserResponse userResponse)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Result(QuestionarioViewModel userResponse)
         {
-            Resposta r = new();
-            r.Justification = HttpContext.Session.GetString("justification");
-            r.CorrectAnswer = HttpContext.Session.GetString("correctAnswer");
+            Resposta r = new()
+            {
+                Justification = HttpContext.Session.GetString("justification"),
+                CorrectAnswer = HttpContext.Session.GetString("correctAnswer")
+            };
 
-            string Checked = "";
+            var selectedLabels = userResponse?.Alternatives?
+                .Where(a => a.Selected)
+                .Select(a => a.Label)
+                .Where(label => !string.IsNullOrWhiteSpace(label))
+                .ToList() ?? new List<string>();
 
-            if (userResponse.Option1St) { Checked += ((Label)0) + " "; }
-            if (userResponse.Option2Nd) { Checked += ((Label)1) + " "; }
-            if (userResponse.Option3Rd) { Checked += ((Label)2) + " "; }
-            if (userResponse.Option4Th) { Checked += ((Label)3) + " "; }
-            if (userResponse.Option5Th) { Checked += ((Label)4) + " "; }
+            r.Checked = string.Join(" ", selectedLabels);
 
-            r.Checked = Checked;
+            string normalizedChecked = string.Join(" ", selectedLabels
+                .Select(label => label.Trim())
+                .OrderBy(label => label, StringComparer.OrdinalIgnoreCase));
 
-            if (r.Checked.Equals(r.CorrectAnswer))
+            string normalizedCorrect = string.Join(" ", (r.CorrectAnswer ?? string.Empty)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(label => label.Trim())
+                .OrderBy(label => label, StringComparer.OrdinalIgnoreCase));
+
+            if (normalizedChecked.Equals(normalizedCorrect, StringComparison.OrdinalIgnoreCase))
             {
                 HttpContext.Session.SetInt32("Pontos", (int)(HttpContext.Session.GetInt32("Pontos") + 1));
             }
