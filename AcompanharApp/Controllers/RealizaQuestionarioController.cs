@@ -130,7 +130,7 @@ namespace AcompanharApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Result(QuestionarioViewModel userResponse)
         {
-            Resposta r = new()
+            RespostaViewModel r = new()
             {
                 Justification = HttpContext.Session.GetString("justification"),
                 CorrectAnswer = HttpContext.Session.GetString("correctAnswer")

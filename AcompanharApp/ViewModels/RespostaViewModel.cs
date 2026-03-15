@@ -1,6 +1,6 @@
 ﻿namespace AcompanharApp.ViewModels
 {
-    public class Resposta
+    public class RespostaViewModel
     {
         public string Checked { get; set; }
         public string CorrectAnswer { get; set; }

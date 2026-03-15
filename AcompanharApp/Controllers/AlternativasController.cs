@@ -1,5 +1,4 @@
 ﻿using AcompanharApp.Data;
-using AcompanharApp.Enums;
 using AcompanharApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,17 +41,13 @@ namespace AcompanharApp.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
-            {
                 return NotFound();
-            }
 
             var alternativa = await _context.Alternativa
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (alternativa == null)
-            {
                 return NotFound();
-            }
 
             return View(alternativa);
         }
@@ -74,33 +69,29 @@ namespace AcompanharApp.Controllers
                 return NotFound();
             }
 
+            char quintaLetra = GetLetter(5);
+
             if (ModelState.IsValid)
             {
-
-                if (_index < Enum.GetNames(typeof(Label)).Length)
-                {
-                    Label Label = (Label)_index;
-                    alternativa.Rotulo = Label.ToString();
-
-                    alternativa.QuestaoId = _QuestaoId;
-                    _context.Add(alternativa);
-                    await _context.SaveChangesAsync();
-                }
+                alternativa.Rotulo = GetLetter(_index).ToString();
+                alternativa.QuestaoId = _QuestaoId;
+                _context.Add(alternativa);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(alternativa);
         }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
-            {
                 return NotFound();
-            }
+
             var alternativa = await _context.Alternativa.FindAsync(id);
             if (alternativa == null)
-            {
                 return NotFound();
-            }
+
             return View(alternativa);
         }
 
@@ -109,9 +100,7 @@ namespace AcompanharApp.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,QuestaoId,Rotulo,Afirmacao,Veracidade")] Alternativa alternativa)
         {
             if (id != alternativa.Id)
-            {
                 return NotFound();
-            }
 
             int _QuestaoId;
             try
@@ -134,13 +123,9 @@ namespace AcompanharApp.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!AlternativaExists(alternativa.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -150,16 +135,12 @@ namespace AcompanharApp.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || HttpContext.Session.GetString("IdProfessor") == null)
-            {
                 return NotFound();
-            }
 
             var alternativa = await _context.Alternativa
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (alternativa == null)
-            {
                 return NotFound();
-            }
 
             return View(alternativa);
         }
@@ -185,12 +166,10 @@ namespace AcompanharApp.Controllers
             }
 
             var alternativasList = _context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id).ToList();
-            Label Label;
 
             for (int i = 1; i <= alternativasList.Count; i++)
             {
-                Label = (Label)i;
-                alternativasList[i].Rotulo = Label.ToString();
+                alternativasList[i].Rotulo = GetLetter(i).ToString();
 
                 _context.Update(alternativasList[i]);
                 _context.SaveChanges();
@@ -203,6 +182,8 @@ namespace AcompanharApp.Controllers
         public IActionResult Create() => View();
 
         public IActionResult BackToQuestao() => RedirectToAction("Index", "Questoes");
+
+        private char GetLetter(int index) => (char)('A' + (index));
 
         private bool AlternativaExists(int id) => _context.Alternativa.Any(e => e.Id == id);
     }
