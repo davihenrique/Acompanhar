@@ -167,13 +167,12 @@ namespace AcompanharApp.Controllers
 
             var alternativasList = _context.Alternativa.Where(a => a.QuestaoId == _QuestaoId).OrderBy(a => a.Id).ToList();
 
-            for (int i = 1; i <= alternativasList.Count; i++)
+            foreach (var alt in alternativasList)
             {
-                alternativasList[i].Rotulo = GetLetter(i).ToString();
-
-                _context.Update(alternativasList[i]);
-                _context.SaveChanges();
+                alt.Rotulo = GetLetter(alternativasList.IndexOf(alt)).ToString();
             }
+
+            _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
