@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET 6 Launch (AcompanharApp)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build AcompanharApp",
+      "program": "${workspaceFolder}/AcompanharApp/bin/Debug/net6.0/AcompanharApp.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/AcompanharApp",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
+      "name": ".NET Attach",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}

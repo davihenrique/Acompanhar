@@ -1,0 +1,86 @@
+﻿@model AcompanharApp.ViewModels.QuestionarioViewModel
+
+@{
+    ViewData["Title"] = "Questionário";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h2>Tema: <b>@ViewData["Tema"]</b></h2>
+<br />
+<form asp-action="Result">
+
+    <div class="form-group">
+        <label><b>@ViewData["QuestaoAtual"])</b> @Html.DisplayFor(modelItem => modelItem.Question)</label>
+    </div>
+    @if (Model.TextOption1St != null)
+    {
+
+        <div class="form-check">
+
+            <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option1St">
+
+            <label class="form-check-label" for="flexCheckDefault">
+                <b> @Html.DisplayFor(modelItem => modelItem.Label1St))</b>
+                @Html.DisplayFor(modelItem => modelItem.TextOption1St)
+
+                <br />
+
+            </label>
+        </div>
+    }
+
+    @if (Model.TextOption2Nd != null)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option2Nd">
+            <label class="form-check-label" for="flexCheckDefault">
+                <b> @Html.DisplayFor(modelItem => modelItem.Label2Nd))</b>
+                @Html.DisplayFor(modelItem => modelItem.TextOption2Nd)
+                <br />
+
+            </label>
+        </div>
+    }
+    @if (Model.TextOption3Rd != null)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option3Rd">
+            <label class="form-check-label" for="flexCheckDefault">
+                <b> @Html.DisplayFor(modelItem => modelItem.Label3Rd))</b>
+                @Html.DisplayFor(modelItem => modelItem.TextOption3Rd)
+                <br />
+
+            </label>
+        </div>
+    }
+
+    @if (Model.TextOption4Th != null)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option4Th">
+            <label class="form-check-label" for="flexCheckDefault">
+                <b> @Html.DisplayFor(modelItem => modelItem.Label4Th))</b>
+                @Html.DisplayFor(modelItem => modelItem.TextOption4Th)
+                <br />
+
+            </label>
+        </div>
+    }
+
+    @if (Model.TextOption5Th != null)
+    {
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="flexCheckDefault" asp-for="Option5Th">
+            <label class="form-check-label" for="flexCheckDefault">
+                <b> @Html.DisplayFor(modelItem => modelItem.Label5Th))</b>
+                @Html.DisplayFor(modelItem => modelItem.TextOption5Th)
+                <br />
+
+            </label>
+        </div>
+    }
+    <br />
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+<br />
+<span>Total de questões: @ViewData["NumeroDeQuestao"]</span>

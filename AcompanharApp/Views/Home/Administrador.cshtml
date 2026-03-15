@@ -1,0 +1,16 @@
+﻿@model AcompanharApp.ViewModels.GenericLoginViewModel
+
+@section styles{
+    <link href="~/css/estiloLogin.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+}
+<div class="main">
+    <p class="sign" align="center">Tela de Login Administrador</p>
+    <form class="form1" asp-controller="CadrastroProfessor" asp-action="Index" method="post">
+        <input class="un " type="text" align="center" placeholder="Name" name="Email" asp-for="Email">
+        <input class="pass" type="password" align="center" placeholder="Senha" name="Password" asp-for="Password">
+        <input class="submit" type="submit" value="Entrar" />
+
+    </form>
+
+</div>
