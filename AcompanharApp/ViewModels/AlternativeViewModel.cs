@@ -1,6 +1,5 @@
 namespace AcompanharApp.ViewModels
 {
-
         public class AlternativeViewModel
         {
             public string Text { get; set; }
@@ -8,5 +7,4 @@ namespace AcompanharApp.ViewModels
             public bool IsCorrect { get; set; }
             public bool Selected { get; set; }
         }
-
 }
