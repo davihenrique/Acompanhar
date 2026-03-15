@@ -1,5 +1,4 @@
 ﻿using AcompanharApp.Data;
-using AcompanharApp.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +22,6 @@ namespace AcompanharApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IRealizaQuestionarioRepository, RealizaQuestionarioRepository>();
-
             services.AddControllersWithViews();
             services.AddSession(options =>
             {

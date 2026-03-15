@@ -1,6 +1,5 @@
 ﻿using AcompanharApp.Data;
 using AcompanharApp.Models;
-using AcompanharApp.Repositories;
 using AcompanharApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +13,9 @@ namespace AcompanharApp.Controllers
     public class RealizaQuestionarioController : Controller
     {
         private readonly AcompanharContext _context;
-        private readonly IRealizaQuestionarioRepository _realizaQuestionarioRepository;
-        public RealizaQuestionarioController(AcompanharContext context, IRealizaQuestionarioRepository realizaQuestionarioRepository)
+        public RealizaQuestionarioController(AcompanharContext context)
         {
             _context = context;
-            _realizaQuestionarioRepository = realizaQuestionarioRepository;
         }
 
         public IActionResult Index()
@@ -168,7 +165,7 @@ namespace AcompanharApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("Code")] QuestionarioCursorViewModel cursor)
         {
-            if (!_realizaQuestionarioRepository.IsQuestionario(cursor.Code))
+            if (!_context.Questionario.Any(q => q.Id == cursor.Code))
             {
                 return RedirectToAction("Index", "Home");
             }
