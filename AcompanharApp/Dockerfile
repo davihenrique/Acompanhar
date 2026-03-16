@@ -6,16 +6,16 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Acompanhar/Acompanhar.csproj", "Acompanhar/"]
-RUN dotnet restore "Acompanhar/Acompanhar.csproj"
+COPY ["AcompanharApp/AcompanharApp.csproj", "AcompanharApp/"]
+RUN dotnet restore "AcompanharApp/AcompanharApp.csproj"
 COPY . .
-WORKDIR "/src/Acompanhar"
-RUN dotnet build "Acompanhar.csproj" -c Release -o /app/build
+WORKDIR "/src/AcompanharApp"
+RUN dotnet build "AcompanharApp.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Acompanhar.csproj" -c Release -o /app/publish
+RUN dotnet publish "AcompanharApp.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Acompanhar.dll"]
+ENTRYPOINT ["dotnet", "AcompanharApp.dll"]
