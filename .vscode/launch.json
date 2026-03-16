@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build AcompanharApp",
-      "program": "${workspaceFolder}/AcompanharApp/bin/Debug/net6.0/AcompanharApp.dll",
+      "program": "${workspaceFolder}/AcompanharApp/bin/Debug/net10.0/AcompanharApp.dll",
       "args": [],
       "cwd": "${workspaceFolder}/AcompanharApp",
       "stopAtEntry": false,
