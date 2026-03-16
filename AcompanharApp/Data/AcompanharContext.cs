@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AcompanharApp.Data;
 
-public class AcompanharContext : DbContext
+public class AcompanharContext(DbContextOptions<AcompanharContext> options) : DbContext(options)
 {
     public DbSet<Professor> Professor { get; set; }
 
@@ -16,10 +16,6 @@ public class AcompanharContext : DbContext
     public DbSet<Tarefa> Tarefa { get; set; }
     public DbSet<Administrador> Administrador { get; set; }
 
-    public AcompanharContext(DbContextOptions<AcompanharContext> options)
-        : base(options)
-    {
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
