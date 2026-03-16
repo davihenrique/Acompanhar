@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace AcompanharApp.ViewModels
-{
-    public class QuestionarioViewModel 
-    {
-        public string Question { get; set; }
+namespace AcompanharApp.ViewModels;
 
-        public List<AlternativeViewModel> Alternatives { get; set; }
-    }
+public class QuestionarioViewModel 
+{
+    public string Question { get; set; }
+
+    public List<AlternativeViewModel> Alternatives { get; set; }
 }

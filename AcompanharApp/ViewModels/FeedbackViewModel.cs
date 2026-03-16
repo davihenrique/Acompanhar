@@ -1,7 +1,6 @@
-﻿namespace AcompanharApp.ViewModels
+﻿namespace AcompanharApp.ViewModels;
+
+public class FeedbackViewModel
 {
-    public class FeedbackViewModel
-    {
-        public string Message { get; set; }
-    }
+    public string Message { get; set; }
 }
