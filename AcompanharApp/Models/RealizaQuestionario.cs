@@ -1,7 +1,6 @@
-﻿namespace AcompanharApp.Models
+﻿namespace AcompanharApp.Models;
+
+public class RealizaQuestionario
 {
-    public class RealizaQuestionario
-    {
-        public int Code { get; set; }
-    }
+    public int Code { get; set; }
 }

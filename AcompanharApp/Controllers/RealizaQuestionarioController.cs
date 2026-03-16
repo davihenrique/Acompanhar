@@ -8,16 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AcompanharApp.Controllers
-{
-    public class RealizaQuestionarioController : Controller
+namespace AcompanharApp.Controllers;
+    public class RealizaQuestionarioController(AcompanharContext context) : Controller
     {
-        private readonly AcompanharContext _context;
-        public RealizaQuestionarioController(AcompanharContext context)
-        {
-            _context = context;
-        }
-
         public IActionResult Index()
         {
             QuestionarioCursorViewModel Cursor = new();
@@ -32,7 +25,7 @@ namespace AcompanharApp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            List<Questao> questoes = _context.Questao.Where(q => q.QuestionarioId == Cursor.Code).Include(q => q.Alternativas).ToList();
+            List<Questao> questoes = context.Questao.Where(q => q.QuestionarioId == Cursor.Code).Include(q => q.Alternativas).ToList();
 
             Questao qa;
             if (Cursor.CurrentPoint <= Cursor.Size)
@@ -90,7 +83,7 @@ namespace AcompanharApp.Controllers
 
             try
             {
-                res = (double)((100 * (HttpContext.Session.GetInt32("Pontos"))) / _context.Questao.Count(q => q.QuestionarioId == int.Parse(HttpContext.Session.GetString("Code")))) / 10;
+                res = (double)((100 * (HttpContext.Session.GetInt32("Pontos"))) / context.Questao.Count(q => q.QuestionarioId == int.Parse(HttpContext.Session.GetString("Code")))) / 10;
             }
             catch (Exception)
             {
@@ -120,8 +113,8 @@ namespace AcompanharApp.Controllers
 
             t.Messagem = feedbackViewModel.Message;
 
-            _context.Add(t);
-            await _context.SaveChangesAsync();
+            context.Add(t);
+            await context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
         }
@@ -165,15 +158,15 @@ namespace AcompanharApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("Code")] QuestionarioCursorViewModel cursor)
         {
-            if (!_context.Questionario.Any(q => q.Id == cursor.Code))
+            if (!context.Questionario.Any(q => q.Id == cursor.Code))
             {
                 return RedirectToAction("Index", "Home");
             }
             Questionario q;
             try
             {
-                cursor.Size = (_context.Questao.Count(q => q.QuestionarioId == cursor.Code)) - 1;
-                q = _context.Questionario.Find(cursor.Code);
+                cursor.Size = (context.Questao.Count(q => q.QuestionarioId == cursor.Code)) - 1;
+                q = context.Questionario.Find(cursor.Code);
 
             }
             catch (Exception)
@@ -194,4 +187,3 @@ namespace AcompanharApp.Controllers
             return RedirectToAction(nameof(Index));
         }
     }
-}
