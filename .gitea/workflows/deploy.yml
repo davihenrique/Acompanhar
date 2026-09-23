@@ -1,0 +1,108 @@
+name: "Build and Deploy"
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .gitignore
+      - README.md
+      - LICENSE
+  workflow_dispatch:
+
+concurrency:
+  group: "acompanhar-deploy"
+  cancel-in-progress: true
+
+env:
+  DEPLOY_HOST: vm1 # <--- IP da vm1
+  DEPLOY_USER: davi
+  DEPLOY_PATH: /home/davi/acompanhar
+  IMAGE: localhost/acompanhar:latest
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar dependencias do sistema
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends \
+            git rsync openssh-client
+
+      - name: Checkout
+        env:
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SCHEME="${GITHUB_SERVER_URL%%://*}"
+          SERVER="${GITHUB_SERVER_URL#*://}"
+          git init -q .
+          git config --global --add safe.directory "$PWD"
+          git remote add origin \
+            "${SCHEME}://x-access-token:${GITEA_TOKEN}@${SERVER}/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags origin \
+            "+refs/heads/${GITHUB_REF_NAME}:refs/remotes/origin/${GITHUB_REF_NAME}"
+          git checkout -q -B "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
+
+      - name: Configurar SSH
+        env:
+          DEPLOY_KEY_PRIMARY: ${{ secrets.DEPLOY_SSH_KEY_B64 }}
+          DEPLOY_KEY_FALLBACK: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          KEY="${DEPLOY_KEY_PRIMARY:-$DEPLOY_KEY_FALLBACK}"
+          install -m 700 -d ~/.ssh
+          if [ -z "$KEY" ]; then
+            echo "nenhum secret de chave definido (DEPLOY_SSH_KEY_B64 ou DEPLOY_SSH_KEY)"
+            exit 1
+          fi
+          if printf '%s' "$KEY" | grep -q "BEGIN .*PRIVATE KEY"; then
+            printf '%s\n' "$KEY" > ~/.ssh/deploy_key
+          else
+            printf '%s' "$KEY" | tr -d '[:space:]' | base64 -d > ~/.ssh/deploy_key
+          fi
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null \
+            || { echo "chave invalida apos decodificar (${#KEY} chars no secret)"; exit 1; }
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Enviar codigo e buildar imagem na vm1
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes"
+          TARGET="$DEPLOY_USER@$DEPLOY_HOST"
+
+          $SSH "$TARGET" "mkdir -p $DEPLOY_PATH/src"
+          rsync -az --delete -e "$SSH" \
+            --exclude .git --exclude .gitea --exclude '**/bin' --exclude '**/obj' \
+            ./ "$TARGET:$DEPLOY_PATH/src/"
+
+          $SSH "$TARGET" "cd $DEPLOY_PATH/src && podman build -t $IMAGE -f Acompanhar/Dockerfile ."
+
+      - name: Publicar servico (porta 8081)
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes"
+          TARGET="$DEPLOY_USER@$DEPLOY_HOST"
+
+          # Envia a definicao Quadlet do Podman e atualiza o serviço no systemd do usuario
+          $SSH "$TARGET" "mkdir -p ~/.config/containers/systemd && touch $DEPLOY_PATH/acompanhar.env"
+          rsync -az -e "$SSH" deploy/acompanhar.container \
+            "$TARGET:.config/containers/systemd/acompanhar.container"
+          $SSH "$TARGET" '
+            export XDG_RUNTIME_DIR=/run/user/$(id -u)
+            systemctl --user daemon-reload
+            systemctl --user restart acompanhar.service 2>/dev/null || systemctl --user enable --now acompanhar.service
+            systemctl --user is-active acompanhar.service
+            podman image prune -f > /dev/null'
+
+      - name: Verificar resposta HTTP
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes"
+          $SSH "$DEPLOY_USER@$DEPLOY_HOST" '
+            export XDG_RUNTIME_DIR=/run/user/$(id -u)
+            for i in $(seq 1 15); do
+              curl -fsS -o /dev/null http://localhost:8081/ && { echo "app respondendo na 8081"; exit 0; }
+              sleep 2
+            done
+            echo "app nao respondeu na porta 8081"
+            systemctl --user status acompanhar.service --no-pager || true
+            exit 1'

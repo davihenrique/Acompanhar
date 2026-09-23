@@ -1,0 +1,20 @@
+[Unit]
+Description=Acompanhar (ASP.NET Core)
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+ContainerName=acompanhar
+Image=localhost/acompanhar:latest
+# Rede do host: a app escuta direto na porta 8081 da vm1 e alcança o PostgreSQL em localhost:5432
+Network=host
+Environment=PORT=8081
+Environment=ASPNETCORE_ENVIRONMENT=Production
+# Sobrescritas locais da vm1 (ex.: ConnectionStrings__AcompanharContext=...), fora do repositório
+EnvironmentFile=%h/acompanhar/acompanhar.env
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
