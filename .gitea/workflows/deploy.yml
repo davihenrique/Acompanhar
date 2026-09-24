@@ -76,7 +76,7 @@ jobs:
             --exclude .git --exclude .gitea --exclude '**/bin' --exclude '**/obj' \
             ./ "$TARGET:$DEPLOY_PATH/src/"
 
-          $SSH "$TARGET" "cd $DEPLOY_PATH/src && podman build -t $IMAGE -f Acompanhar/Dockerfile ."
+          $SSH "$TARGET" "cd $DEPLOY_PATH/src && podman build -t $IMAGE -f AcompanharApp/Dockerfile ."
 
       - name: Publicar servico (porta 8081)
         run: |
