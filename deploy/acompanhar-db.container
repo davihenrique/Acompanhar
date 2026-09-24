@@ -1,0 +1,21 @@
+[Unit]
+Description=Acompanhar - PostgreSQL
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+ContainerName=acompanhar-db
+Image=docker.io/library/postgres:16
+PublishPort=5432:5432
+Volume=acompanhar-db-data:/var/lib/postgresql/data
+Volume=%h/acompanhar-db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,Z
+Environment=POSTGRES_DB=AcompanharDb
+Environment=POSTGRES_USER=acompanhar
+# POSTGRES_PASSWORD fica em arquivo local da vm2, fora do repositório
+EnvironmentFile=%h/acompanhar-db/db.env
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
