@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acompanhar", "Acompanhar\Acompanhar.csproj", "{2B88C5ED-087B-47C0-98AC-92062C103D95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcompanharApp", "AcompanharApp\AcompanharApp.csproj", "{2B88C5ED-087B-47C0-98AC-92062C103D95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

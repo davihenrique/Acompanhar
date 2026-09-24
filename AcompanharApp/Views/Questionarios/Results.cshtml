@@ -1,0 +1,46 @@
+﻿@model IEnumerable<AcompanharApp.Models.Tarefa>
+
+@{
+    ViewData["Title"] = "Resultados";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    Quantidade De vezes Realizada: @ViewData["Quantidade"]<br />
+    Média: @ViewData["Media"]<br />
+    Nota Máxima: @ViewData["Max"]<br />
+    Mediana: @ViewData["Mediana"]
+</p>
+
+<div>
+    <a asp-action="Index">Voltar Para Lista</a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.Messagem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nota)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Messagem)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nota)
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>

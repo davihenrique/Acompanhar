@@ -1,0 +1,42 @@
+﻿@model AcompanharApp.Models.Alternativa
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>Alternativa</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="QuestaoId" />
+            <input type="hidden" asp-for="Rotulo" />
+            
+            <div class="form-group">
+                <label asp-for="Afirmacao" class="control-label"></label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" asp-for="Afirmacao"></textarea>
+                <span asp-validation-for="Afirmacao" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Veracidade" /> @Html.DisplayNameFor(model => model.Veracidade)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar Para Lista</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
