@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DEPLOY_HOST: vm1 # <--- IP da vm1
+  DEPLOY_HOST: vm-deploy
   DEPLOY_USER: davi
   DEPLOY_PATH: /home/davi/acompanhar
   IMAGE: localhost/acompanhar:latest
