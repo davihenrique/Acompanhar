@@ -66,17 +66,56 @@ jobs:
             || { echo "chave invalida apos decodificar (${#KEY} chars no secret)"; exit 1; }
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Enviar codigo e buildar imagem na vm1
+      - name: Enviar codigo, buildar imagem e preparar banco (em paralelo)
         run: |
           SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes"
           TARGET="$DEPLOY_USER@$DEPLOY_HOST"
 
+          # O rsync vem antes porque o build e o banco (database/init.sql) dependem do codigo na vm
           $SSH "$TARGET" "mkdir -p $DEPLOY_PATH/src"
           rsync -az --delete -e "$SSH" \
             --exclude .git --exclude .gitea --exclude '**/bin' --exclude '**/obj' \
             ./ "$TARGET:$DEPLOY_PATH/src/"
 
-          $SSH "$TARGET" "cd $DEPLOY_PATH/src && podman build -t $IMAGE -f AcompanharApp/Dockerfile ."
+          # Cria o banco se nao existir, usando a connection string do acompanhar.env da vm (a mesma da app)
+          cat > /tmp/preparar-banco.sh <<'EOF'
+          set -euo pipefail
+          CS=$(grep -E '^ConnectionStrings__AcompanharContext=' "$DEPLOY_PATH/acompanhar.env" | cut -d= -f2- || true)
+          [ -n "$CS" ] || { echo "ConnectionStrings__AcompanharContext ausente em $DEPLOY_PATH/acompanhar.env"; exit 1; }
+          get() { printf '%s' "$CS" | tr ';' '\n' | grep -i "^$1=" | head -1 | cut -d= -f2-; }
+          export PGHOST=$(get Server) PGPORT=$(get Port) PGUSER=$(get 'User Id') PGPASSWORD=$(get Password)
+          export PGPORT=${PGPORT:-5432} PGCONNECT_TIMEOUT=10
+          DB=$(get Database)
+
+          if [ "$(psql -d postgres -tAc "select 1 from pg_database where datname = '$DB'")" != "1" ]; then
+            echo "criando banco $DB em $PGHOST"
+            psql -v ON_ERROR_STOP=1 -d postgres -c "CREATE DATABASE \"$DB\""
+          fi
+
+          if [ "$(psql -d "$DB" -tAc "select to_regclass('public.\"Administrador\"') is not null")" != "t" ]; then
+            echo "criando tabelas em $DB (database/init.sql)"
+            psql -q -v ON_ERROR_STOP=1 --single-transaction -d "$DB" -f "$DEPLOY_PATH/src/database/init.sql"
+          else
+            echo "banco $DB ja existe em $PGHOST, nada a fazer"
+          fi
+          EOF
+
+          # Build e banco rodam ao mesmo tempo; cada um grava seu proprio log para nao misturar a saida
+          $SSH "$TARGET" "cd $DEPLOY_PATH/src && podman build -t $IMAGE -f AcompanharApp/Dockerfile ." \
+            > /tmp/build.log 2>&1 &
+          PID_BUILD=$!
+          $SSH "$TARGET" "DEPLOY_PATH=$DEPLOY_PATH bash -s" < /tmp/preparar-banco.sh \
+            > /tmp/banco.log 2>&1 &
+          PID_BANCO=$!
+
+          STATUS_BANCO=0; wait $PID_BANCO || STATUS_BANCO=$?
+          echo "::group::Banco de dados (exit $STATUS_BANCO)"; cat /tmp/banco.log; echo "::endgroup::"
+          STATUS_BUILD=0; wait $PID_BUILD || STATUS_BUILD=$?
+          echo "::group::Build da imagem (exit $STATUS_BUILD)"; cat /tmp/build.log; echo "::endgroup::"
+
+          [ $STATUS_BANCO -eq 0 ] || echo "falha ao preparar o banco de dados"
+          [ $STATUS_BUILD -eq 0 ] || echo "falha no build da imagem"
+          [ $STATUS_BANCO -eq 0 ] && [ $STATUS_BUILD -eq 0 ]
 
       - name: Publicar servico (porta 8081)
         run: |
